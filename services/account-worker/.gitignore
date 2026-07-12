@@ -1,0 +1,4 @@
+.dev.vars
+coverage/
+node_modules/
+.wrangler/

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AIC_ACCOUNT_DELETION_URL</key>
+	<string>$(AIC_ACCOUNT_DELETION_URL)</string>
+	<key>AIC_API_BASE_URL</key>
+	<string>$(AIC_API_BASE_URL)</string>
+	<key>AIC_METHODOLOGY_URL</key>
+	<string>$(AIC_METHODOLOGY_URL)</string>
+	<key>AIC_PRIVACY_URL</key>
+	<string>$(AIC_PRIVACY_URL)</string>
+	<key>AIC_SUPPORT_URL</key>
+	<string>$(AIC_SUPPORT_URL)</string>
+	<key>AIC_TERMS_URL</key>
+	<string>$(AIC_TERMS_URL)</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Am I Cooked?</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter circle. Your location is not uploaded or saved.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,9 @@
+# Copy to .dev.vars for local development only. Never commit .dev.vars.
+# Generate independent, high-entropy values; do not reuse between environments.
+ACCESS_TOKEN_SECRET=replace-with-at-least-32-random-characters
+APPLE_SUBJECT_PEPPER=replace-with-at-least-32-random-characters
+DELETION_TOMBSTONE_PEPPER=replace-with-a-distinct-32-character-random-secret
+APPLE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\nREPLACE_WITH_SIGN_IN_WITH_APPLE_P8_CONTENT\n-----END PRIVATE KEY-----
+# Base64-encoded, exactly 32 random bytes.
+APPLE_TOKEN_ENCRYPTION_KEY=replace-with-base64-encoded-32-byte-key
+RATE_LIMIT_PEPPER=replace-with-at-least-32-random-characters

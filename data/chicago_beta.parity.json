@@ -1,0 +1,107 @@
+{
+  "category_order": [
+    "assault_battery",
+    "robbery",
+    "theft",
+    "motor_vehicle_theft"
+  ],
+  "fixtures": [
+    {
+      "category_estimates": [
+        108.4,
+        4.6,
+        41.2,
+        21.2
+      ],
+      "category_numerators": [
+        10840,
+        460,
+        4120,
+        2120
+      ],
+      "community_area": "Auburn Gresham",
+      "cooked_score": 60,
+      "coverage_eligible": true,
+      "display_category_counts": [
+        108,
+        5,
+        41,
+        21
+      ],
+      "estimated_total_count": 175,
+      "grid_column": 230,
+      "grid_row": 165,
+      "id": "eligible_reference_1",
+      "latitude": 41.74838786001455,
+      "longitude": -87.67339634684177,
+      "percentile": 57.938092860708934,
+      "source_through_date": "2026-06-30"
+    },
+    {
+      "category_estimates": [
+        105.4,
+        4.6,
+        44.2,
+        27.0
+      ],
+      "category_numerators": [
+        10540,
+        460,
+        4420,
+        2700
+      ],
+      "community_area": "Bridgeport",
+      "cooked_score": 60,
+      "coverage_eligible": true,
+      "display_category_counts": [
+        105,
+        5,
+        44,
+        27
+      ],
+      "estimated_total_count": 181,
+      "grid_column": 260,
+      "grid_row": 250,
+      "id": "eligible_reference_2",
+      "latitude": 41.82483009093114,
+      "longitude": -87.6373176094733,
+      "percentile": 59.41088367448827,
+      "source_through_date": "2026-06-30"
+    },
+    {
+      "category_estimates": [
+        55.2,
+        0.0,
+        25.2,
+        11.2
+      ],
+      "category_numerators": [
+        5520,
+        0,
+        2520,
+        1120
+      ],
+      "community_area": "Montclare",
+      "cooked_score": 35,
+      "coverage_eligible": true,
+      "display_category_counts": [
+        56,
+        0,
+        25,
+        11
+      ],
+      "estimated_total_count": 92,
+      "grid_column": 125,
+      "grid_row": 365,
+      "id": "eligible_reference_3",
+      "latitude": 41.92825193275946,
+      "longitude": -87.7996719276314,
+      "percentile": 35.222166749875186,
+      "source_through_date": "2026-06-30"
+    }
+  ],
+  "fixtures_are_aggregate_reference_points_not_incident_locations": true,
+  "methodology_version": "beta-cell250-q5-area-v3",
+  "numerator_denominator": 100,
+  "schema_version": 3
+}

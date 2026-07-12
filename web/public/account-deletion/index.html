@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete an AIC Account</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span class="dot"></span>AIC</a>
+  <h1>Delete your account</h1>
+  <p>Account deletion is initiated and completed inside the AIC app; this page explains the flow and does not replace the in-app control.</p>
+
+  <h2>Steps in the app</h2>
+  <ol>
+    <li>Open AIC account settings.</li>
+    <li>Choose <strong>Delete account</strong> and review what will be removed.</li>
+    <li>Complete fresh Sign in with Apple reauthentication.</li>
+    <li>Confirm permanent deletion.</li>
+  </ol>
+
+  <h2>What AIC does</h2>
+  <p>After confirmation, AIC consumes the one-time deletion proof, permanently removes the account, public username, Apple credential, and every AIC session, and clears app-owned Keychain/session and temporary-receipt data. A keyed deletion marker remains for 24 hours only to stop a stale Apple response from recreating the account.</p>
+
+  <h2>If Apple revocation is temporarily unavailable</h2>
+  <p>Local account deletion still completes. AIC moves encrypted Apple authorization tokens that still require revocation into an account-unlinked retry queue under random identifiers. That queue contains no account ID, username, or scan location. AIC destroys each encrypted token after Apple accepts the revocation or after 20 attempts or 30 days, whichever comes first.</p>
+
+  <h2>What is not controlled by AIC</h2>
+  <p>AIC does not store normal scan history on the account service. Deletion cannot remove a receipt you saved to Photos, sent through another app, or that another person copied or screenshotted.</p>
+
+  <h2>When deletion cannot start</h2>
+  <p>The app fails closed and explains how to retry if fresh Apple authentication or the AIC deletion service is unavailable before confirmation. During the internal beta, use TestFlight’s <em>Send Beta Feedback</em> action if repeated retries fail; do not include an exact location.</p>
+
+  <footer><a href="/">AIC beta</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/terms/">Terms</a></footer>
+</main>
+</body>
+</html>

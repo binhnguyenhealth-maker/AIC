@@ -1,0 +1,707 @@
+{
+  "codes": [
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0312",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ARMED - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0313",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ARMED - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "031A",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ARMED - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "031B",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ARMED - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0320",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "STRONG ARM - NO WEAPON"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0325",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "VEHICULAR HIJACKING"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0326",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "AGGRAVATED VEHICULAR HIJACKING"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0330",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "AGGRAVATED"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0331",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT AGGRAVATED"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0334",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT ARMED - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0337",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT ARMED - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "033A",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT ARMED - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "033B",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT ARMED - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "robbery",
+      "index_code": "I",
+      "iucr": "0340",
+      "official_primary_description": "ROBBERY",
+      "official_secondary_description": "ATTEMPT STRONG ARM - NO WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "041A",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "041B",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0420",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0430",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0440",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - HANDS, FISTS, FEET, NO / MINOR INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0450",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0451",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0452",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0453",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0454",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED P.O. - HANDS, FISTS, FEET, NO / MINOR INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0460",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "SIMPLE"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0461",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED P.O. - HANDS, FISTS, FEET, SERIOUS INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0462",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGG. PROTECTED EMPLOYEE - HANDS, FISTS, FEET, SERIOUS INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0475",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "OF AN UNBORN CHILD"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0479",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED - HANDS, FISTS, FEET, SERIOUS INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0480",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0481",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0482",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0483",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0484",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "PROTECTED EMPLOYEE - HANDS, FISTS, FEET, NO / MINOR INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0485",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED OF A CHILD"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0486",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "DOMESTIC BATTERY SIMPLE"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0487",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED OF AN UNBORN CHILD"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0488",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED DOMESTIC BATTERY - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0489",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED DOMESTIC BATTERY - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0495",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED OF A SENIOR CITIZEN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0496",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED DOMESTIC BATTERY - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0497",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED DOMESTIC BATTERY - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0498",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGG. DOMESTIC BATTERY - HANDS, FISTS, FEET, SERIOUS INJURY"
+    },
+    {
+      "active": false,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0499",
+      "official_primary_description": "BATTERY",
+      "official_secondary_description": "AGGRAVATED DOMESTIC BATTERY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "051A",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "051B",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0520",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0530",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0545",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "PROTECTED EMPLOYEE - HANDS, FISTS, FEET, NO / MINOR INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0550",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0551",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0552",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0553",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0554",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED POLICE OFFICER - HANDS, FISTS, FEET, NO INJURY"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0555",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - HANDGUN"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0556",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - OTHER FIREARM"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0557",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - KNIFE / CUTTING INSTRUMENT"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "I",
+      "iucr": "0558",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "AGGRAVATED PROTECTED EMPLOYEE - OTHER DANGEROUS WEAPON"
+    },
+    {
+      "active": true,
+      "category": "assault_battery",
+      "index_code": "N",
+      "iucr": "0560",
+      "official_primary_description": "ASSAULT",
+      "official_secondary_description": "SIMPLE"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0710",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "THEFT FROM MOTOR VEHICLE"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0810",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "OVER $500"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0820",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "$500 AND UNDER"
+    },
+    {
+      "active": false,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0830",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "THEFT RETAIL"
+    },
+    {
+      "active": false,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0840",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "FINANCIAL IDENTITY THEFT: OVER $300"
+    },
+    {
+      "active": false,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0841",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "FINANCIAL IDENTITY THEFT: $300 & UNDER"
+    },
+    {
+      "active": false,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0842",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "AGGRAVATED: FINANCIAL IDENTITY THEFT"
+    },
+    {
+      "active": false,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0843",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "ATTEMPT FINANCIAL IDENTITY THEFT"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0850",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "ATTEMPT THEFT"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0860",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "RETAIL THEFT"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0865",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "DELIVERY CONTAINER THEFT"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0870",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "POCKET-PICKING"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0880",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "PURSE-SNATCHING"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0890",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "FROM BUILDING"
+    },
+    {
+      "active": true,
+      "category": "theft",
+      "index_code": "I",
+      "iucr": "0895",
+      "official_primary_description": "THEFT",
+      "official_secondary_description": "FROM COIN-OPERATED MACHINE OR DEVICE"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0910",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "AUTOMOBILE"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0915",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "TRUCK, BUS, MOTOR HOME"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0917",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "CYCLE, SCOOTER, BIKE WITH VIN"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0918",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "CYCLE, SCOOTER, BIKE NO VIN"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0920",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "ATTEMPT - AUTOMOBILE"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0925",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "ATTEMPT - TRUCK, BUS, MOTOR HOME"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0927",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "ATTEMPT - CYCLE, SCOOTER, BIKE WITH VIN"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0928",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "ATTEMPT - CYCLE, SCOOTER, BIKE NO VIN"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0930",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "THEFT / RECOVERY - AUTOMOBILE"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0935",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "THEFT / RECOVERY - TRUCK, BUS, MOBILE HOME"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0937",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "THEFT / RECOVERY - CYCLE, SCOOTER, BIKE WITH VIN"
+    },
+    {
+      "active": true,
+      "category": "motor_vehicle_theft",
+      "index_code": "I",
+      "iucr": "0938",
+      "official_primary_description": "MOTOR VEHICLE THEFT",
+      "official_secondary_description": "THEFT / RECOVERY - CYCLE, SCOOTER, BIKE NO VIN"
+    }
+  ],
+  "rules": {
+    "new_code_policy": "Any official selected-category code absent from this file fails validation and requires explicit review.",
+    "primary_type_cross_check": "The incident primary_type must match official_primary_description or the build fails.",
+    "selection": "An incident is included only when its IUCR code is present exactly once in codes."
+  },
+  "schema_version": 1,
+  "source": {
+    "dataset_id": "c7ck-438e",
+    "frozen_at": "2026-07-11T01:40:00Z",
+    "name": "Chicago Police Department - Illinois Uniform Crime Reporting (IUCR) Codes",
+    "official_url": "https://data.cityofchicago.org/d/c7ck-438e",
+    "query": "$select=iucr,primary_description,secondary_description,index_code,active&$where=primary_description in ('ASSAULT','BATTERY','ROBBERY','THEFT','MOTOR VEHICLE THEFT')&$order=primary_description,iucr&$limit=5000",
+    "resource_url": "https://data.cityofchicago.org/resource/c7ck-438e.json",
+    "source_rows_updated_at_epoch": 1780434514
+  }
+}

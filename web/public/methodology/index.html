@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cooked Score Beta Methodology</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span class="dot"></span>AIC</a>
+  <h1>Beta methodology</h1>
+  <p class="notice"><strong>Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.</strong></p>
+
+  <h2>What is counted</h2>
+  <p>The Chicago beta uses selected records from the City of Chicago’s official reported-incident dataset. It includes four mutually exclusive groups only: assault and battery, robbery, theft, and motor-vehicle theft. It excludes unsupported categories and records without usable geography.</p>
+
+  <h2>How a result is calculated</h2>
+  <ol>
+    <li>The app uses a fixed 500-metre radius around the local scan point.</li>
+    <li>For release privacy, each selected source record contributes to one non-overlapping 250-metre cell and one supported category. Each category count is independently rounded to the nearest five; the pack stores no exact or residual cell total.</li>
+    <li>The app treats each released category band as uniform within its cell and area-weights the portions of nearby cells that intersect the 500-metre circle. The result is an estimate, not an exact incident count.</li>
+    <li>It compares that estimate with a fixed set of eligible Chicago reference locations calculated with the identical estimator and source window.</li>
+    <li>It converts that comparison to a within-Chicago percentile and rounds Cooked Score Beta to the nearest five.</li>
+    <li>It displays the estimated contributing count, estimated category breakdown, coverage period, and source-through date.</li>
+  </ol>
+  <p>There are no severity weights, recency weights, time-of-day adjustments, demographic inputs, personal history, predictive probabilities, or cross-city comparisons in this beta.</p>
+
+  <h2>Eligibility and location privacy</h2>
+  <p>Reference locations are generated within the official Chicago boundary, with invalid water and boundary samples excluded. The compact device pack contains privacy-coarsened statistics for non-overlapping cells and comparison statistics—not case numbers, addresses, timestamps, descriptions, source incident points, exact cell totals, or residual totals. The released bands contain no sub-cell location signal: every point inside the same cell is represented identically. Your current location or manual pin is processed locally and is not sent to the AIC account service.</p>
+
+  <h2>Limits and bias</h2>
+  <p>Reported-incident data reflects reporting and enforcement practices, not all events. Records can be preliminary, revised, delayed, incomplete, misclassified, or geographically shifted. Cell coarsening, category rounding, and area weighting can make the displayed estimates higher or lower than an exact point-level calculation. A percentile describes relative estimated concentration in this Chicago source window; it does not explain why incidents were reported and does not label a person or neighborhood safe or unsafe.</p>
+
+  <h2>Current beta source</h2>
+  <p>The app is the source of truth for the exact bundled pack version, coverage window, source-through date, and checksum. AIC attributes the City of Chicago and Chicago Police Department in the result details. The method remains provisional pending external statistical review.</p>
+
+  <footer><a href="/">AIC beta</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/terms/">Terms</a></footer>
+</main>
+</body>
+</html>

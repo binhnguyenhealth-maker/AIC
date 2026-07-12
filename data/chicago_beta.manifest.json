@@ -1,0 +1,348 @@
+{
+  "cross_language_parity": {
+    "filename": "chicago_beta.parity.json",
+    "fixture_count": 3,
+    "sha256": "ae43e6b645bbed637c19a07a2e5db67a2a7259196e4ff7479b3debc4837de97e"
+  },
+  "disclosure_validation": {
+    "aggregate_domain": {
+      "cells": 23630,
+      "column_max": 141,
+      "column_min": 3,
+      "row_max": 188,
+      "row_min": 19
+    },
+    "event_influence_max_categories": 1,
+    "event_influence_max_cells": 1,
+    "exact_or_residual_total_released": false,
+    "five_band_true_range": "3-7 incidents per category and cell",
+    "low_count_profile": {
+      "assault_battery": {
+        "positive_released_cells": 4953,
+        "singleton_cells": 1049,
+        "three_to_four_incident_cells": 1099,
+        "two_incident_cells": 738,
+        "zero_cells": 16890
+      },
+      "motor_vehicle_theft": {
+        "positive_released_cells": 2584,
+        "singleton_cells": 1754,
+        "three_to_four_incident_cells": 1386,
+        "two_incident_cells": 1229,
+        "zero_cells": 18063
+      },
+      "robbery": {
+        "positive_released_cells": 547,
+        "singleton_cells": 1430,
+        "three_to_four_incident_cells": 364,
+        "two_incident_cells": 507,
+        "zero_cells": 21146
+      },
+      "theft": {
+        "positive_released_cells": 4344,
+        "singleton_cells": 1247,
+        "three_to_four_incident_cells": 1448,
+        "two_incident_cells": 968,
+        "zero_cells": 17071
+      }
+    },
+    "outside_city_by_category": {
+      "assault_battery": 193,
+      "motor_vehicle_theft": 34,
+      "robbery": 19,
+      "theft": 187
+    },
+    "outside_city_coordinates_excluded": 433,
+    "positive_band_minimum_raw_count": {
+      "assault_battery": 3,
+      "motor_vehicle_theft": 3,
+      "robbery": 3,
+      "theft": 3
+    },
+    "subcell_position_used_in_release": false,
+    "usable_source_rows": 138649,
+    "zero_band_true_range": "0-2 incidents per category and cell"
+  },
+  "display": {
+    "disclaimer": "Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.",
+    "methodology_name": "Reported Incident Exposure Index",
+    "product_name": "Cooked Score Beta",
+    "source_limitation": "Chicago Police Department data reflects reported incidents, is preliminary, may be revised, may contain errors or omissions, and does not capture unreported incidents. Source-map locations are approximate."
+  },
+  "estimator": {
+    "aggregate_band_rounding": "nearest five, half values upward, independently per category",
+    "aggregate_band_size": 5,
+    "aggregate_cell_size_m": 250.0,
+    "area_weighting": "Snap local x/y to the nearest whole metre half-away-from-zero. Divide each 250 m cell into a fixed 10 by 10 lattice of 25 m subcells. The cell weight is the number of subcell centers within the inclusive 500 m Euclidean disk divided by 100. Sum band times hit-count with integer decimetre geometry, divide by 100, and round the total to the nearest integer half-up.",
+    "city_center_nodes_before_coverage_gate": 59967,
+    "count_semantics": "privacy-coarsened estimated contributing incidents, never an exact circle count",
+    "coverage_disk_lattice_samples": 81,
+    "display_rounding": "nearest five, half values round upward, clamped to 0...100",
+    "eligibility": "Every 100 m lattice point within 500 m of the query node must be inside the union of official Chicago community-area polygons; nodes failing this discrete coverage gate are ineligible. The coverage lattice is a conservative discrete approximation, not a proof that every point in the continuous disk is inside.",
+    "grid_anchor": {
+      "latitude": 41.6,
+      "longitude": -87.95
+    },
+    "integer_geometry": {
+      "cell_size": 2500,
+      "radius": 5000,
+      "radius_squared_inclusive": 25000000,
+      "subcell_center_offset": 125,
+      "subcell_size": 250,
+      "unit": "decimetre"
+    },
+    "overlap_subcell_size_m": 25.0,
+    "overlap_subcells_per_axis": 10,
+    "percentile": "empirical midrank: 100 * (references below + 0.5 * references tied) / N",
+    "radius_m": 500.0,
+    "reference_spacing_m": 500.0,
+    "scan_coordinate_snap_m": 1.0
+  },
+  "iucr_mapping": {
+    "frozen_code_count": 86,
+    "frozen_file": "pipeline/iucr_mapping.json",
+    "frozen_file_sha256": "3b7b0b6f8ffca3bdb33e09dae149b099b748e2252a22755330834bea32018072",
+    "mutual_exclusivity_verified": true,
+    "observed_code_count": 76,
+    "observed_codes": [
+      "0312",
+      "0313",
+      "031A",
+      "031B",
+      "0320",
+      "0325",
+      "0326",
+      "0330",
+      "0331",
+      "0334",
+      "0337",
+      "033A",
+      "033B",
+      "0340",
+      "041A",
+      "041B",
+      "0420",
+      "0430",
+      "0440",
+      "0450",
+      "0452",
+      "0453",
+      "0454",
+      "0460",
+      "0461",
+      "0462",
+      "0475",
+      "0479",
+      "0482",
+      "0483",
+      "0484",
+      "0485",
+      "0486",
+      "0487",
+      "0488",
+      "0489",
+      "0495",
+      "0496",
+      "0497",
+      "0498",
+      "051A",
+      "051B",
+      "0520",
+      "0530",
+      "0545",
+      "0550",
+      "0551",
+      "0552",
+      "0553",
+      "0554",
+      "0555",
+      "0556",
+      "0557",
+      "0558",
+      "0560",
+      "0710",
+      "0810",
+      "0820",
+      "0850",
+      "0860",
+      "0865",
+      "0870",
+      "0880",
+      "0890",
+      "0895",
+      "0910",
+      "0915",
+      "0917",
+      "0918",
+      "0920",
+      "0925",
+      "0927",
+      "0928",
+      "0930",
+      "0935",
+      "0937"
+    ],
+    "selection_rule": "IUCR code must appear exactly once in the frozen mapping; primary_type must match the frozen official primary description.",
+    "unobserved_frozen_codes": [
+      "0451",
+      "0480",
+      "0481",
+      "0499",
+      "0830",
+      "0840",
+      "0841",
+      "0842",
+      "0843",
+      "0938"
+    ]
+  },
+  "pack": {
+    "compressed_filename": "chicago_beta.sqlite.gz",
+    "compressed_sha256": "5a5d575c03fa83e477989735bc0cff9fa780d0e4a7d627c99c0e90642eff0bd0",
+    "compressed_size_bytes": 1589300,
+    "filename": "chicago_beta.sqlite",
+    "sha256": "7b1b0e688eb8bbc07e59dad35988fe1c6d8326e0536d215785a995c04142f0b4",
+    "size_bytes": 4530176
+  },
+  "period": {
+    "end_exclusive": "2026-07-01",
+    "months": 12,
+    "source_through_date": "2026-06-30",
+    "start": "2025-07-01"
+  },
+  "privacy": {
+    "aggregate_cell_columns": [
+      "cell_row",
+      "cell_column",
+      "assault_battery_band",
+      "robbery_band",
+      "theft_band",
+      "motor_vehicle_theft_band"
+    ],
+    "all_fixed_domain_cells_shipped_including_zero": true,
+    "all_subcell_positions_for_an_eligible_record_within_the_same_cell_and_category_are_release_equivalent": true,
+    "each_source_event_influences_at_most_one_cell_and_one_category": true,
+    "exact_or_residual_total_released": false,
+    "five_band_true_range": "3-7 incidents per category and cell",
+    "network_rule": "The app must never upload scan coordinates, query-node coordinates, or geographic cells.",
+    "nonoverlapping_cells": true,
+    "prohibited_fields_absent": [
+      "incident-level coordinates",
+      "source incident ID",
+      "case number",
+      "date or timestamp",
+      "block or address",
+      "description",
+      "arrest",
+      "victim information"
+    ],
+    "shipped_incident_rows": 0,
+    "source_points_shipped": false,
+    "zero_band_true_range": "0-2 incidents per category and cell"
+  },
+  "row_counts": {
+    "aggregate_cells": 23630,
+    "aggregate_cells_with_any_positive_band": 5807,
+    "all_geocoded_source_rows_in_period": 232951,
+    "all_source_rows_in_period": 233051,
+    "community_areas": 77,
+    "eligible_reference_locations": 2003,
+    "evaluation_nodes_not_shipped": 50049,
+    "outside_official_boundary_coordinates_excluded": 433,
+    "reference_distribution_buckets": 530,
+    "selected_geocoded_rows": 139082,
+    "selected_iucr_rows_unmapped": 0,
+    "selected_missing_coordinates_excluded": 49,
+    "selected_source_rows": 139131,
+    "shipped_incident_rows": 0,
+    "temporary_source_incidents_used_to_aggregate": 138649,
+    "unsupported_categories_excluded": 93920
+  },
+  "schema_version": 3,
+  "sources": {
+    "community_areas": {
+      "dataset_id": "igwz-8jzy",
+      "official_url": "https://data.cityofchicago.org/d/igwz-8jzy",
+      "query": "$select=area_numbe,community,the_geom&$order=area_numbe&$limit=100",
+      "resource_url": "https://data.cityofchicago.org/resource/igwz-8jzy.json",
+      "retrieved_at": "2026-07-11T02:40:53Z",
+      "snapshot_sha256": "3fd4cb3c936c0d3d61dce9b336579e19cce83f4a927703758f2cdbbb905d27b2",
+      "source_rows_updated_at_epoch": 1745363197
+    },
+    "crime": {
+      "dataset_id": "ijzp-q8t2",
+      "official_url": "https://data.cityofchicago.org/d/ijzp-q8t2",
+      "query": "$select=id,date,iucr,primary_type,latitude,longitude&$where=date >= '2025-07-01T00:00:00' AND date < '2026-07-01T00:00:00' AND iucr IN ('0312','0313','031A','031B','0320','0325','0326','0330','0331','0334','0337','033A','033B','0340','041A','041B','0420','0430','0440','0450','0451','0452','0453','0454','0460','0461','0462','0475','0479','0480','0481','0482','0483','0484','0485','0486','0487','0488','0489','0495','0496','0497','0498','0499','051A','051B','0520','0530','0545','0550','0551','0552','0553','0554','0555','0556','0557','0558','0560','0710','0810','0820','0830','0840','0841','0842','0843','0850','0860','0865','0870','0880','0890','0895','0910','0915','0917','0918','0920','0925','0927','0928','0930','0935','0937','0938') AND latitude IS NOT NULL AND longitude IS NOT NULL&$order=id",
+      "resource_url": "https://data.cityofchicago.org/resource/ijzp-q8t2.json",
+      "retrieved_at": "2026-07-11T02:40:53Z",
+      "snapshot_sha256": "af7129d415b2cf5e8e6699626fe8739524cda22847b630bb4acd2b13d71df302",
+      "source_rows_updated_at_epoch": 1783682296
+    },
+    "iucr_codes": {
+      "dataset_id": "c7ck-438e",
+      "official_url": "https://data.cityofchicago.org/d/c7ck-438e",
+      "query": "$select=iucr,primary_description,secondary_description,index_code,active&$where=primary_description IN ('ASSAULT','BATTERY','MOTOR VEHICLE THEFT','ROBBERY','THEFT')&$order=primary_description,iucr&$limit=5000",
+      "resource_url": "https://data.cityofchicago.org/resource/c7ck-438e.json",
+      "retrieved_at": "2026-07-11T02:40:53Z",
+      "snapshot_sha256": "577eb40ee8f3a56d9f63c6a41965e581a4b3c3044bb3a95fa357b177806b8bb2",
+      "source_rows_updated_at_epoch": 1780434514
+    }
+  },
+  "utility_validation": {
+    "benchmark": "All eligible 100 m evaluation nodes; exact source points and exact node counts exist only in build memory and are not shipped.",
+    "cooked_score_absolute_error": {
+      "exact_fraction": 0.5158344822074367,
+      "max": 55.0,
+      "mean": 3.0029571020400008,
+      "over_10_fraction": 0.020280125477032507,
+      "p50": 0.0,
+      "p90": 5.0,
+      "p95": 10.0,
+      "p99": 15.0,
+      "within_10_fraction": 0.9797198745229675,
+      "within_5_fraction": 0.9205578533037623
+    },
+    "dominant_category_agreement": 0.9153829247337609,
+    "estimated_count_absolute_error": {
+      "max": 822.0,
+      "mean": 18.32564087194549,
+      "p50": 13.0,
+      "p90": 38.0,
+      "p95": 54.0,
+      "p99": 109.0
+    },
+    "evaluation_nodes": 50049,
+    "movement_score_absolute_error": {
+      "10m": {
+        "max": 5.0,
+        "mean": 0.2825,
+        "over_10_fraction": 0.0,
+        "p50": 0.0,
+        "p90": 0.0,
+        "p95": 5.0,
+        "p99": 5.0,
+        "samples": 2000
+      },
+      "25m": {
+        "max": 5.0,
+        "mean": 0.6275,
+        "over_10_fraction": 0.0,
+        "p50": 0.0,
+        "p90": 5.0,
+        "p95": 5.0,
+        "p99": 5.0,
+        "samples": 2000
+      },
+      "50m": {
+        "max": 15.0,
+        "mean": 1.215,
+        "over_10_fraction": 0.0005,
+        "p50": 0.0,
+        "p90": 5.0,
+        "p95": 5.0,
+        "p99": 5.0,
+        "samples": 2000
+      }
+    }
+  }
+}

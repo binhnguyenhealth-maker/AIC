@@ -1,0 +1,143 @@
+name: AIC launch verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aic-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  data-pack:
+    name: Chicago pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Run pipeline tests
+        run: python3 -m unittest discover -s pipeline/tests -v
+      - name: Verify shipped pack
+        run: python3 pipeline/verify_pack.py data/chicago_beta.sqlite data/chicago_beta.manifest.json
+      - name: Verify checksums
+        working-directory: data
+        run: shasum -a 256 -c chicago_beta.checksums.sha256
+
+  account-worker:
+    name: Account Worker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/account-worker
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: services/account-worker/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Run named tests
+        run: npm test
+      - name: Apply migrations to a fresh local D1
+        run: npx wrangler d1 migrations apply aic-account-dev --local --persist-to "$(mktemp -d)"
+      - name: Build Worker without deployment
+        run: npx wrangler deploy --dry-run
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+  ios-simulator:
+    name: iOS Simulator build and tests
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Verify generated Xcode project is current
+        run: |
+          xcodegen generate --spec ios/project.yml --project ios
+          git diff --exit-code -- ios/AIC.xcodeproj ios/AIC/Config/Info.plist
+      - name: Build Swift core
+        run: swift build --package-path ios
+      - name: Test Swift core
+        run: swift test --package-path ios
+      - name: Select an available iPhone Simulator
+        id: simulator
+        run: |
+          udid="$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.isAvailable == true and (.name | startswith("iPhone")))][0].udid')"
+          test -n "$udid" && test "$udid" != "null"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$udid" || true
+          open -a Simulator --args -CurrentDeviceUDID "$udid"
+      - name: Build and run iOS tests
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/AIC.xcodeproj \
+            -scheme AIC \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            -derivedDataPath "$RUNNER_TEMP/AICDerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/AIC.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            test | tee "$RUNNER_TEMP/aic-xcodebuild.log"
+      - name: Capture built app evidence
+        if: success()
+        run: |
+          app_path="$(find "$RUNNER_TEMP/AICDerivedData/Build/Products" -path '*Debug-iphonesimulator/AIC.app' -print -quit)"
+          pack_path="$(find "$app_path" -name chicago_beta.sqlite -print -quit)"
+          test -n "$app_path" && test -n "$pack_path"
+          {
+            echo "app_bundle_kib=$(du -sk "$app_path" | awk '{print $1}')"
+            echo "pack_bytes=$(stat -f '%z' "$pack_path")"
+            echo "pack_sha256=$(shasum -a 256 "$pack_path" | awk '{print $1}')"
+            echo "bundle_identifier=$(plutil -extract CFBundleIdentifier raw "$app_path/Info.plist")"
+            echo "bundle_version=$(plutil -extract CFBundleVersion raw "$app_path/Info.plist")"
+            echo "privacy_manifest_count=$(find "$app_path" -name PrivacyInfo.xcprivacy | wc -l | tr -d ' ')"
+          } > "$RUNNER_TEMP/aic-app-bundle-evidence.txt"
+      - name: Export retained XCTest evidence
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/AIC.xcresult"; then
+            xcrun xcresulttool export attachments \
+              --path "$RUNNER_TEMP/AIC.xcresult" \
+              --output-path "$RUNNER_TEMP/aic-xctest-attachments"
+          fi
+      - name: Launch and capture the real onboarding screen
+        if: success()
+        run: |
+          app_path="$(find "$RUNNER_TEMP/AICDerivedData/Build/Products" -path '*Debug-iphonesimulator/AIC.app' -print -quit)"
+          test -n "$app_path"
+          xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$app_path"
+          xcrun simctl launch "${{ steps.simulator.outputs.udid }}" com.binhnguyenhealth.aic
+          sleep 3
+          xcrun simctl io "${{ steps.simulator.outputs.udid }}" screenshot "$RUNNER_TEMP/aic-onboarding.png"
+      - name: Upload Xcode evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: aic-ios-evidence
+          path: |
+            ${{ runner.temp }}/aic-xcodebuild.log
+            ${{ runner.temp }}/aic-app-bundle-evidence.txt
+            ${{ runner.temp }}/aic-onboarding.png
+            ${{ runner.temp }}/aic-xctest-attachments/
+          if-no-files-found: warn

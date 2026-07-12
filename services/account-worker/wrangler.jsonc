@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aic-account-dev",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-10",
+  "workers_dev": true,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "vars": {
+    "APPLE_AUDIENCE": "com.binhnguyenhealth.aic",
+    "APPLE_TEAM_ID": "REPLACE_WITH_APPLE_TEAM_ID",
+    "APPLE_KEY_ID": "REPLACE_WITH_SIGN_IN_WITH_APPLE_KEY_ID",
+    "TOKEN_ISSUER": "https://aic-account-dev.binhnguyenhealth.workers.dev",
+    "TOKEN_AUDIENCE": "aic-ios"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aic-account-dev",
+      "database_id": "6b442940-cddc-471e-a53f-ea080dd56aa6",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}

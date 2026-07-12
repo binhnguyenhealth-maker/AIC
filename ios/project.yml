@@ -1,0 +1,110 @@
+name: AIC
+
+options:
+  bundleIdPrefix: com.binhnguyen
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  postGenCommand: python3 scripts/fix_sign_in_capability.py
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  AICCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: AICCore
+    dependencies:
+      - sdk: libsqlite3.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.binhnguyenhealth.aic.core
+        DEFINES_MODULE: YES
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+
+  AIC:
+    type: application
+    platform: iOS
+    sources:
+      - path: AIC
+        excludes:
+          - Config
+    dependencies:
+      - target: AICCore
+    entitlements:
+      path: AIC/Config/AIC.entitlements
+      properties:
+        com.apple.developer.applesignin:
+          - Default
+    attributes:
+      SystemCapabilities:
+        com.apple.SignInWithApple.iOS:
+          enabled: 1
+    info:
+      path: AIC/Config/Info.plist
+      properties:
+        CFBundleDisplayName: Am I Cooked?
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: "AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter circle. Your location is not uploaded or saved."
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        AIC_API_BASE_URL: "$(AIC_API_BASE_URL)"
+        AIC_PRIVACY_URL: "$(AIC_PRIVACY_URL)"
+        AIC_SUPPORT_URL: "$(AIC_SUPPORT_URL)"
+        AIC_TERMS_URL: "$(AIC_TERMS_URL)"
+        AIC_METHODOLOGY_URL: "$(AIC_METHODOLOGY_URL)"
+        AIC_ACCOUNT_DELETION_URL: "$(AIC_ACCOUNT_DELETION_URL)"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.binhnguyenhealth.aic
+        PRODUCT_NAME: AIC
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        AIC_API_BASE_URL: "https://aic-account-dev.binhnguyenhealth.workers.dev"
+        AIC_PRIVACY_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/privacy/"
+        AIC_SUPPORT_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/support/"
+        AIC_TERMS_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/terms/"
+        AIC_METHODOLOGY_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/methodology/"
+        AIC_ACCOUNT_DELETION_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/account-deletion/"
+
+  AICTests:
+    type: bundle.unit-test
+    platform: iOS
+    hostApplication: AIC
+    sources:
+      - path: Tests/AICAppTests
+      - path: Tests/AICCoreTests
+    dependencies:
+      - target: AIC
+      - target: AICCore
+      - sdk: libsqlite3.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.binhnguyenhealth.aic.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  AIC:
+    build:
+      targets:
+        AIC: all
+        AICCore: all
+    test:
+      targets:
+        - AICTests
