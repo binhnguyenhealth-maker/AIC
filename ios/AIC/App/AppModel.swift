@@ -2,6 +2,48 @@ import AICCore
 import AuthenticationServices
 import Foundation
 
+#if DEBUG
+enum ShowcaseData {
+    enum Screen: String {
+        case home
+        case result
+        case receipt
+    }
+
+    static var requestedScreen: Screen? {
+        let argumentValue = ProcessInfo.processInfo.arguments
+            .first { $0.hasPrefix("--aic-showcase=") }?
+            .replacingOccurrences(of: "--aic-showcase=", with: "")
+        guard let value = argumentValue ?? ProcessInfo.processInfo.environment["AIC_SHOWCASE_SCREEN"] else { return nil }
+        return Screen(rawValue: value)
+    }
+
+    static let session = AuthSession(
+        accountID: "showcase",
+        accessToken: "showcase",
+        refreshToken: "showcase",
+        accessTokenExpiresAt: .distantFuture,
+        username: "chi_builder"
+    )
+
+    static let result = ChicagoScanResult(
+        cookedScore: 75,
+        chicagoPercentile: 76,
+        estimatedIncidentCount: 135,
+        categoryCounts: [
+            CategoryCount(category: .assaultBattery, count: 40),
+            CategoryCount(category: .robbery, count: 15),
+            CategoryCount(category: .theft, count: 65),
+            CategoryCount(category: .motorVehicleTheft, count: 15),
+        ],
+        neighborhood: "Near West Side",
+        sourceThroughDate: "2026-06-30",
+        periodStart: "2021-01-01",
+        methodologyVersion: "chicago-beta-v1"
+    )
+}
+#endif
+
 struct AppleCredentialMaterial: Equatable {
     let authorizationCode: String
     let identityToken: String
@@ -32,6 +74,12 @@ final class AppModel: ObservableObject {
     ) {
         self.accountAPI = accountAPI
         self.sessionStore = sessionStore
+#if DEBUG
+        if ShowcaseData.requestedScreen != nil {
+            session = ShowcaseData.session
+            phase = .ready
+        }
+#endif
     }
 
     var username: String { session?.username ?? "" }

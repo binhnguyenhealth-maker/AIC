@@ -1,5 +1,7 @@
 # Am I Cooked?
 
+![Am I Cooked — privacy-first Chicago scoring on iPhone](docs/showcase/social-preview.png)
+
 Am I Cooked? (AIC) is a privacy-first iOS application that turns official
 Chicago historical reported-incident data into a locally calculated,
 descriptive **Cooked Score**.
@@ -8,6 +10,18 @@ The app is designed around a deliberately narrow promise: users can compare a
 location with eligible Chicago reference locations without sending their
 coordinates, pins, routes, addresses, or scan history to AIC services. It is
 not a live safety assessment or a prediction of personal risk.
+
+## Product tour
+
+<p align="center">
+  <img src="docs/showcase/sign-in.jpg" alt="AIC sign-in screen explaining local scoring and privacy" width="320">
+  &nbsp;&nbsp;
+  <img src="docs/showcase/local-scan.jpg" alt="AIC home screen ready to calculate a local Chicago Cooked Score" width="320">
+</p>
+
+The onboarding states the product boundary before account creation. After sign-in,
+the primary flow makes both location choices explicit while confirming that the
+Chicago data pack and scoring operation remain on-device.
 
 ## What I built
 

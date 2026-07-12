@@ -777,6 +777,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.binhnguyenhealth.aic;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphonesimulator*]" = com.binhnguyenhealth.aic.showcase;
 				PRODUCT_NAME = AIC;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -802,6 +803,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.binhnguyenhealth.aic;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphonesimulator*]" = com.binhnguyenhealth.aic.showcase;
 				PRODUCT_NAME = AIC;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;

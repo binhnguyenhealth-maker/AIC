@@ -30,7 +30,7 @@ private struct RootView: View {
                 UsernameScreen(model: model)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             case .ready:
-                MainFlowView(model: model)
+                readyView
                     .transition(.opacity)
             }
         }
@@ -43,5 +43,21 @@ private struct RootView: View {
         } message: {
             Text(model.presentedError ?? "Something went wrong.")
         }
+    }
+
+    @ViewBuilder
+    private var readyView: some View {
+#if DEBUG
+        switch ShowcaseData.requestedScreen {
+        case .result:
+            NavigationStack { ResultScreen(result: ShowcaseData.result) {} }
+        case .receipt:
+            NavigationStack { ReceiptScreen(result: ShowcaseData.result, username: model.username) }
+        default:
+            MainFlowView(model: model)
+        }
+#else
+        MainFlowView(model: model)
+#endif
     }
 }
