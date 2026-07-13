@@ -16,13 +16,13 @@ final class PackStatusClientTests: XCTestCase {
             trustAnchor: PackStatusClient.trustAnchor
         ).verify(
             envelopeData: Data(contentsOf: statusURL),
-            now: Date(timeIntervalSince1970: 1_783_910_000)
+            now: Date(timeIntervalSince1970: 1_783_910_500)
         )
         let packSHA = try PackStatusVerifier.sha256Hex(fileAt: packURL)
 
-        XCTAssertEqual(packSHA, "821130a16d616c808c795844623c9a134120719685b4ae59303394bcfe8d01e7")
+        XCTAssertEqual(packSHA, "1a18629fa3429eefec10d0d025c80102ce7c48a63457e601c1c404001686ca32")
         XCTAssertEqual(verified.entry(forPackSHA256: packSHA)?.status, .active)
-        XCTAssertEqual(verified.payload.sequence, 1)
+        XCTAssertEqual(verified.payload.sequence, 2)
     }
 
     func testGlobalStatusRequestContainsNoLocationOrClientIdentifier() throws {
@@ -37,6 +37,6 @@ final class PackStatusClientTests: XCTestCase {
         XCTAssertNil(request.httpBody)
         XCTAssertEqual(request.allHTTPHeaderFields, ["Accept": "application/json"])
         XCTAssertFalse(request.url!.absoluteString.localizedCaseInsensitiveContains("chicago"))
-        XCTAssertFalse(request.url!.absoluteString.contains("821130"))
+        XCTAssertFalse(request.url!.absoluteString.contains("1a18629"))
     }
 }

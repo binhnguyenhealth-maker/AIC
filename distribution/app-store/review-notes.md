@@ -26,6 +26,8 @@ The displayed count and category breakdown are privacy-coarsened estimates. The 
 
 Normal current-location scans and manual pins are processed on-device against a bundled SQLite data pack. AIC does not transmit scan coordinates, addresses, routes, scan-derived geographic cells, or scan history. The application does not declare or request background-location access. Receipt images contain no precise location or EXIF/GPS metadata.
 
+On launch and when returning to the foreground, subject to a 15-minute rate limit, AIC may fetch one fixed global signed pack-status file so a materially flawed bundled pack can be withdrawn. The request has no city, coordinates, scan data, account or device identifier, installed-pack identifier, query, or body. The hosting provider necessarily receives the request IP address and ordinary HTTP/TLS metadata to deliver and secure the file. AIC uses no cookies, analytics, advertising identifiers, or personalization for this check. A scan itself never triggers this request.
+
 ## Reviewer access
 
 AIC v1 has no account system, authentication UI, reviewer credential, or Sign in with Apple entitlement. All reviewable app functionality is available immediately after launch.

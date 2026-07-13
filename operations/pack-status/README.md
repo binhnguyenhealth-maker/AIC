@@ -29,7 +29,7 @@ The pinned threshold keys can only be rotated in an app update. Pack downloads,
 delegated city roles, transparency proofs, and atomic remote pack activation are
 future work.
 
-> **Renewal deadline:** the status committed for sequence 1 expires at
+> **Renewal deadline:** the status committed for sequence 2 expires at
 > **2026-07-20 02:40:16 UTC**. Publish a reviewed, higher-sequence issuance well
 > before that time. CI fails when less than 24 hours remain.
 

@@ -19,3 +19,6 @@ Cooked Score is a historical data index that compares reported-incident concentr
 AIC does not promise that a place is safe or unsafe and should not be used for emergency or navigation decisions.
 
 This release supports eligible Chicago locations only. Source coverage, data-through date, and methodology are shown in the app.
+
+CITY OF CHICAGO DATA NOTICE
+This site provides applications using data that has been modified for use from its original source, www.cityofchicago.org, the official website of the City of Chicago. The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site. The data provided at this site is subject to change at any time. It is understood that the data provided at this site is being used at one's own risk.

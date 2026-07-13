@@ -47,3 +47,13 @@ The source datasets link to the City of Chicago Data Portal terms of use. Users
 who redistribute or rebuild the data should review the current terms shown on
 each dataset page. AIC's MIT license applies to this repository's software; it
 does not replace or expand rights attached to third-party source data.
+
+City-required derivative-application notice:
+
+> This site provides applications using data that has been modified for use
+> from its original source, www.cityofchicago.org, the official website of the
+> City of Chicago. The City of Chicago makes no claims as to the content,
+> accuracy, timeliness, or completeness of any of the data provided at this
+> site. The data provided at this site is subject to change at any time. It is
+> understood that the data provided at this site is being used at one's own
+> risk.

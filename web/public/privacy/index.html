@@ -26,7 +26,10 @@
   <p>AIC v1 has no account, sign-in, public-username, or hosted-content feature. AIC does not collect an account identifier, name, email address, authentication credential, or session record.</p>
 
   <h2>Service providers</h2>
-  <p>Apple provides the App Store and iOS services such as the user-invoked share sheet. Cloudflare hosts these informational policy and support pages. These providers may process technical request information under their own policies. AIC does not sell personal information or use cross-app advertising trackers.</p>
+  <p>Apple provides the App Store and iOS services such as the user-invoked share sheet. Cloudflare hosts these informational policy and support pages and the fixed global signed pack-status file described below. These providers may process technical request information under their own policies. AIC does not sell personal information or use cross-app advertising trackers.</p>
+
+  <h2>Emergency pack-status check</h2>
+  <p>On launch and when returning to the foreground, subject to a 15-minute rate limit, AIC may fetch one fixed global signed pack-status file so a materially flawed bundled pack can be withdrawn. The request contains no city, coordinates, scan data, account or device identifier, installed-pack identifier, query, or body. Cloudflare necessarily receives the request IP address and ordinary HTTP/TLS metadata to deliver and secure the file. AIC uses no cookies, analytics, advertising identifiers, or personalization for this check. Pressing Scan does not trigger a status request.</p>
 
   <h2>Deletion and retention</h2>
   <p>Because v1 has no account, AIC has no account data to delete or retain. Deleting the app removes its local preferences and temporary receipts; it cannot remove copies you previously saved or shared elsewhere.</p>
@@ -35,7 +38,7 @@
   <p>No system can be guaranteed perfectly secure. Material policy changes will be posted here with a new effective date.</p>
 
   <h2>Questions</h2>
-  <p>Use the <a href="https://github.com/binhnguyenhealth-maker/AIC/issues">public AIC support issue tracker</a> for questions; do not post exact locations or other personal information. See the <a href="/support/">support page</a> for help.</p>
+  <p>Email <a href="mailto:admin@holdmetoit.info">admin@holdmetoit.info</a> for private support; do not send exact locations or other sensitive personal information. See the <a href="/support/">support page</a> for help.</p>
   <footer><a href="/">AIC</a> · <a href="/support/">Support</a> · <a href="/methodology/">Methodology</a> · <a href="/terms/">Terms</a></footer>
 </main>
 </body>

@@ -13,7 +13,8 @@
   <p>AIC currently supports eligible locations in Chicago.</p>
 
   <h2>Send feedback or report a problem</h2>
-  <p>Open an issue in the <a href="https://github.com/binhnguyenhealth-maker/AIC/issues">AIC GitHub issue tracker</a>. Include what you expected, what happened, and your iOS version. Issues are public: do not include an exact location or other personal information.</p>
+  <p>Email <a href="mailto:admin@holdmetoit.info">admin@holdmetoit.info</a> for private support. Include what you expected, what happened, and your iOS version. Do not include an exact location or other sensitive personal information.</p>
+  <p>You may also open a public issue in the <a href="https://github.com/binhnguyenhealth-maker/AIC/issues">AIC GitHub issue tracker</a>, but never post an exact location or other personal information there.</p>
 
   <h2>Location permission denied</h2>
   <p>Use <strong>Choose another spot</strong> in AIC for the offline manual-pin flow. AIC does not require background location.</p>
@@ -21,6 +22,7 @@
   <h2>How fresh is the data?</h2>
   <p>AIC is historical, not live. The exact date on which the included historical window ends appears next to every Cooked Score and on every Cooked Receipt. Source records dated after that date are not included, and later additions or revisions may also be absent. If the installed data pack reaches the end of its defined update window, AIC stops producing scores until an updated pack is installed.</p>
   <p>An available scan means only that the installed pack is still inside that update window. It does not mean the source is complete, unrevised, or suitable for immediate safety, emergency, navigation, or route decisions.</p>
+  <p>AIC also checks a fixed, globally shared signed status file at launch or foreground, no more than once every 15 minutes. This lets AIC pause a materially flawed pack before the local cutoff without sending a city, coordinate, scan, account, device identifier, or installed-pack identifier. If a current signed status cannot be verified, AIC fails closed when the last verified status expires.</p>
 
   <h2>Accounts</h2>
   <p>AIC v1 has no account or sign-in feature and collects no account data.</p>

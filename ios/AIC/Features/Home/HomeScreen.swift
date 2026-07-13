@@ -35,9 +35,9 @@ struct HomeScreen: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showSettings = true } label: {
-                    Image(systemName: "person.crop.circle")
+                    Image(systemName: "gearshape.fill")
                         .font(.title2)
-                        .accessibilityLabel(model.isSignedIn ? "Account settings" : "Settings")
+                        .accessibilityLabel("Settings")
                 }
             }
         }

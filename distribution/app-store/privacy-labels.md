@@ -19,6 +19,8 @@ These answers describe the guest-only AIC v1 binary. Apple may independently col
 | Diagnostics | No | No | — | No third-party analytics or crash SDK in the app |
 | Purchases | No | No | — | Payments are deferred |
 
+The final binary may fetch one fixed global signed pack-status file at launch or foreground, rate-limited to once per 15 minutes. It sends no city, coordinate, scan, account, device identifier, or installed-pack identifier. The static-file host necessarily processes the request IP address and ordinary HTTP/TLS metadata for delivery and abuse/security operations; AIC uses no cookies, analytics, advertising identifiers, or personalization for this check. Reconfirm in App Store Connect whether the host's then-current retention makes any Apple “Other Data” disclosure necessary.
+
 Re-check these answers against the final binary and service schema immediately before submission. Any analytics, crash reporter, email retention, or server-side receipt feature changes the answers.
 
 ## Accounts

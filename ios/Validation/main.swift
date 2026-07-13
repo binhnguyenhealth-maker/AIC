@@ -62,7 +62,7 @@ let pack = try ChicagoPack(url: packURL)
 let parityFixtures: [(ScanCoordinate, [Int], Int, Double, Int, String)] = [
     (
         ScanCoordinate(latitude: 41.74838786001455, longitude: -87.67339634684177),
-        [108, 5, 41, 21], 175, 57.938092860708934, 60, "Auburn Gresham"
+        [108, 5, 41, 21], 175, 57.888167748377434, 60, "Auburn Gresham"
     ),
     (
         ScanCoordinate(latitude: 41.82483009093114, longitude: -87.6373176094733),

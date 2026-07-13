@@ -28,7 +28,7 @@ enum ShowcaseData {
         accessToken: "showcase",
         refreshToken: "showcase",
         accessTokenExpiresAt: .distantFuture,
-        username: "chi_builder"
+        username: nil
     )
 #endif
 

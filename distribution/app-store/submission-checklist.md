@@ -4,30 +4,30 @@
 
 - [x] iOS project generation succeeds
 - [x] iOS Simulator build, install, and launch succeed in CI
-- [x] Swift Package tests pass (24 tests)
-- [x] App-hosted Simulator unit/privacy tests pass (46 tests)
+- [x] Swift Package tests pass (40 tests)
+- [x] App-hosted Simulator unit/privacy tests pass (59 tests)
 - [x] Clean installs open the guest-only scan flow
 - [x] Bundled packs fail closed at the documented fresh-until boundary
 - [x] Every generated score and receipt shows the exact source-through date and a not-live label
 - [x] Release version is 1.0.0 (build 1)
 - [x] Release source has no account endpoint, account UI, or Sign in with Apple entitlement
-- [x] Debug Simulator app contains one privacy manifest; Release archive/readback remains below
+- [x] Signed App Store IPA contains one privacy manifest with no collected-data declarations
 - [x] App icon and required screenshots are generated and visually inspected
 - [x] Privacy policy URL returns HTTP 200
 - [x] Support URL returns HTTP 200
 - [x] App Store copy and review notes drafted
-- [ ] Deploy and read back the updated guest-only privacy, support, methodology, deletion, and terms pages
+- [x] Deploy and read back the updated guest-only privacy, support, methodology, deletion, and terms pages
 
 ## Apple-account manual gates
 
 - [x] Install Xcode 26.6 and an iOS 26.5 Simulator runtime
-- [ ] Add the founder's Apple Developer team to Xcode
-- [ ] Register the final bundle identifier (Sign in with Apple is not enabled for v1)
+- [x] Add the founder's Apple Developer team to Xcode
+- [x] Register the final bundle identifier (Sign in with Apple is not enabled in the signed v1 binary)
 - [ ] Create or select the App Store Connect app record
 - [ ] Add the App Store Connect review contact and privacy-policy fields
 - [ ] Confirm agreements, tax, and banking status do not block distribution
-- [ ] Create a distribution certificate/profile or enable automatic signing
-- [ ] Archive and validate a physical-device Release build
+- [x] Create a distribution certificate/profile or enable automatic signing
+- [x] Archive a generic production-device Release build and export a signed App Store IPA
 - [ ] Upload the archive and wait for App Store processing
 - [ ] Add the processed build to an internal TestFlight group
 - [ ] Install from TestFlight on a physical device and execute the smoke test
@@ -39,8 +39,8 @@
 
 - [ ] Complete independent statistical review of the current methodology and disclosures
 - [ ] Complete qualified legal/privacy review of claims, terms, correction process, and Chicago data rights
-- [ ] Verify the current City of Chicago source terms and retain a dated evidence record
-- [ ] Establish and test an emergency pack correction/withdrawal path in addition to the local freshness cutoff
+- [x] Verify the current City of Chicago source terms and retain a dated evidence record
+- [x] Establish and test an emergency pack correction/withdrawal path in addition to the local freshness cutoff
 - [ ] Validate the update-window, update-due-soon, and scans-paused states in a final device build
 - [ ] Assign an owner and calendar alert to refresh or withdraw the pack before `2026-08-07T00:00:00Z`
 

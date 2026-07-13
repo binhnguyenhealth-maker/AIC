@@ -1,5 +1,11 @@
 # Final Launch / Trust Audit
 
+> **Historical audit notice:** This report audited commit `0446c4b` before the
+> guest-only Release, signed pack-status withdrawal path, refreshed Chicago v3
+> pack, City notice, and updated policy pages were implemented. Its NO-GO verdict
+> is evidence for that older snapshot, not the current release candidate. Use the
+> later signed-IPA validation and final release-diff audit for the current verdict.
+
 **Audited revision:** `0446c4b739cb23a247f537cdcee09538f523a433`
 
 **Audit date:** 2026-07-12 (America/New_York)
