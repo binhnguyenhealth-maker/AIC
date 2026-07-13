@@ -129,6 +129,146 @@ public struct VerifiedPackStatus: Equatable, Sendable {
     }
 }
 
+public enum PackStatusTrustedTimeError: Error, Equatable, Sendable {
+    case invalidState
+}
+
+/// A persistable trusted-time anchor for enforcing signed status expiry.
+///
+/// The floor is intentionally separate from the device wall clock. The app
+/// advances and persists it before acting on a cached status so a subsequent
+/// process or boot cannot move trusted time behind the last authorization.
+public struct PackStatusTrustedTime: Codable, Equatable, Sendable {
+    public let wallClockFloorUnix: TimeInterval
+    public let anchorSystemUptime: TimeInterval
+    public let anchorBootTimeUnix: TimeInterval
+
+    public init(wallClock: Date, systemUptime: TimeInterval) throws {
+        try self.init(
+            wallClockFloorUnix: wallClock.timeIntervalSince1970,
+            anchorSystemUptime: systemUptime,
+            anchorBootTimeUnix: wallClock.timeIntervalSince1970 - systemUptime
+        )
+    }
+
+    public init(
+        wallClockFloorUnix: TimeInterval,
+        anchorSystemUptime: TimeInterval,
+        anchorBootTimeUnix: TimeInterval
+    ) throws {
+        let anchorWallClockUnix = anchorBootTimeUnix + anchorSystemUptime
+        guard wallClockFloorUnix.isFinite,
+              wallClockFloorUnix >= 0,
+              anchorSystemUptime.isFinite,
+              anchorSystemUptime >= 0,
+              anchorBootTimeUnix.isFinite,
+              anchorWallClockUnix.isFinite,
+              anchorWallClockUnix >= 0,
+              wallClockFloorUnix >= anchorWallClockUnix else {
+            throw PackStatusTrustedTimeError.invalidState
+        }
+        self.wallClockFloorUnix = wallClockFloorUnix
+        self.anchorSystemUptime = anchorSystemUptime
+        self.anchorBootTimeUnix = anchorBootTimeUnix
+    }
+
+    public var floor: Date {
+        Date(timeIntervalSince1970: wallClockFloorUnix)
+    }
+
+    public func advanced(wallClock: Date, systemUptime: TimeInterval) throws -> Self {
+        let observedWallClockUnix = wallClock.timeIntervalSince1970
+        let observedBootTimeUnix = observedWallClockUnix - systemUptime
+        guard observedWallClockUnix.isFinite,
+              observedWallClockUnix >= 0,
+              systemUptime.isFinite,
+              systemUptime >= 0,
+              observedBootTimeUnix.isFinite else {
+            throw PackStatusTrustedTimeError.invalidState
+        }
+
+        let uptimeAdvanced = systemUptime >= anchorSystemUptime
+        let sameBoot = abs(observedBootTimeUnix - anchorBootTimeUnix) < 10
+            && uptimeAdvanced
+        guard sameBoot else {
+            // Offline code cannot prove how much time elapsed while this boot
+            // identity was absent. A later boot can also exceed an earlier
+            // uptime anchor, so cached authorization requires trusted refresh.
+            throw PackStatusTrustedTimeError.invalidState
+        }
+        let monotonicFloorUnix = wallClockFloorUnix + (systemUptime - anchorSystemUptime)
+        let nextFloorUnix = max(
+            wallClockFloorUnix,
+            max(observedWallClockUnix, monotonicFloorUnix)
+        )
+        return try Self(
+            wallClockFloorUnix: nextFloorUnix,
+            anchorSystemUptime: systemUptime,
+            anchorBootTimeUnix: observedBootTimeUnix
+        )
+    }
+
+    /// Reanchors a persisted floor after a successful signed HTTPS refresh.
+    /// The trusted time can advance the floor but can never lower it. The boot
+    /// anchor uses the local wall clock so later same-process uptime checks do
+    /// not depend on CDN/server clock skew.
+    public func refreshed(
+        trustedWallClock: Date,
+        localWallClock: Date,
+        systemUptime: TimeInterval
+    ) throws -> Self {
+        let trustedUnix = trustedWallClock.timeIntervalSince1970
+        let localUnix = localWallClock.timeIntervalSince1970
+        let bootUnix = localUnix - systemUptime
+        guard trustedUnix.isFinite,
+              trustedUnix >= 0,
+              localUnix.isFinite,
+              localUnix >= 0,
+              systemUptime.isFinite,
+              systemUptime >= 0,
+              bootUnix.isFinite else {
+            throw PackStatusTrustedTimeError.invalidState
+        }
+        return try Self(
+            wallClockFloorUnix: max(wallClockFloorUnix, trustedUnix),
+            anchorSystemUptime: systemUptime,
+            anchorBootTimeUnix: bootUnix
+        )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case wallClockFloorUnix
+        case anchorSystemUptime
+        case anchorBootTimeUnix
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        do {
+            try self.init(
+                wallClockFloorUnix: container.decode(
+                    TimeInterval.self,
+                    forKey: .wallClockFloorUnix
+                ),
+                anchorSystemUptime: container.decode(
+                    TimeInterval.self,
+                    forKey: .anchorSystemUptime
+                ),
+                anchorBootTimeUnix: container.decode(
+                    TimeInterval.self,
+                    forKey: .anchorBootTimeUnix
+                )
+            )
+        } catch is PackStatusTrustedTimeError {
+            throw DecodingError.dataCorruptedError(
+                forKey: .wallClockFloorUnix,
+                in: container,
+                debugDescription: "Trusted-time state violates its monotonic floor invariant."
+            )
+        }
+    }
+}
+
 public enum PackStatusVerificationError: Error, Equatable, LocalizedError {
     case malformedEnvelope
     case unsupportedSchema

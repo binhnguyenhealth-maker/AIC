@@ -29,6 +29,9 @@ targets:
         DEFINES_MODULE: YES
         GENERATE_INFOPLIST_FILE: YES
         SKIP_INSTALL: YES
+      configs:
+        Release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) GUEST_ONLY_V1"
 
   AIC:
     type: application
@@ -90,6 +93,9 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.binhnguyenhealth.aic.tests
         GENERATE_INFOPLIST_FILE: YES
+      configs:
+        Release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) GUEST_ONLY_V1"
 
 schemes:
   AIC:

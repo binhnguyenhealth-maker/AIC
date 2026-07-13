@@ -66,8 +66,6 @@ final class LocalOperationNetworkPrivacyTests: XCTestCase {
 
         let payload = ReceiptComposer.make(
             result: manualPinResult,
-            username: "chi_tester",
-            showUsername: true,
             locationMode: .neighborhood
         )
         let artifact = try ReceiptArtifactRenderer.render(payload)

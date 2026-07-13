@@ -18,8 +18,9 @@ These answers describe the guest-only AIC v1 binary. Apple may independently col
 | Email Address | No | No | — | AIC does not retain Apple relay email even if Apple supplies it |
 | Diagnostics | No | No | — | No third-party analytics or crash SDK in the app |
 | Purchases | No | No | — | Payments are deferred |
+| Other Data Types | Yes | Yes | App Functionality | Cloudflare may retain the request IP address and ordinary HTTP/TLS or security metadata while serving the fixed status file; no scan, coordinate, account, or device identifier is sent |
 
-The final binary may fetch one fixed global signed pack-status file at launch or foreground, rate-limited to once per 15 minutes. It sends no city, coordinate, scan, account, device identifier, or installed-pack identifier. The static-file host necessarily processes the request IP address and ordinary HTTP/TLS metadata for delivery and abuse/security operations; AIC uses no cookies, analytics, advertising identifiers, or personalization for this check. Reconfirm in App Store Connect whether the host's then-current retention makes any Apple “Other Data” disclosure necessary.
+The final binary may fetch one fixed global signed pack-status file at launch or foreground, rate-limited to once per 15 minutes. It sends no city, coordinate, scan, account, device identifier, or installed-pack identifier. The static-file host processes and may retain the request IP address and ordinary HTTP/TLS or security metadata for delivery, reliability, and abuse/security operations. AIC disables developer-accessible Workers Logs and Logpush and uses no cookies, analytics, advertising identifiers, or personalization for this check. The table deliberately discloses **Other Data Types**, linked to the user, for **App Functionality** as the conservative answer because the provider's network-data retention can outlast real-time request servicing. It is not used for tracking.
 
 Re-check these answers against the final binary and service schema immediately before submission. Any analytics, crash reporter, email retention, or server-side receipt feature changes the answers.
 

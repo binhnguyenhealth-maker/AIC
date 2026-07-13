@@ -69,7 +69,7 @@ final class PrivacyConfigurationTests: XCTestCase {
         XCTAssertEqual(AICDistanceSystem.metric.radiusDescription, "500 m")
     }
 
-    func testUserDefaultsReasonIsDeclaredInPrivacyManifest() throws {
+    func testPrivacyManifestDeclaresUserDefaultsAndHostingMetadata() throws {
         let iosRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -81,11 +81,27 @@ final class PrivacyConfigurationTests: XCTestCase {
             format: nil
         ) as? [String: Any])
         let accessedTypes = try XCTUnwrap(manifest["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
-        XCTAssertEqual((manifest["NSPrivacyCollectedDataTypes"] as? [[String: Any]])?.count, 0)
+        let collectedTypes = try XCTUnwrap(manifest["NSPrivacyCollectedDataTypes"] as? [[String: Any]])
+        XCTAssertEqual(collectedTypes.count, 1)
+        let hostingMetadata = try XCTUnwrap(collectedTypes.first)
+        XCTAssertEqual(
+            hostingMetadata["NSPrivacyCollectedDataType"] as? String,
+            "NSPrivacyCollectedDataTypeOtherDataTypes"
+        )
+        XCTAssertEqual(hostingMetadata["NSPrivacyCollectedDataTypeLinked"] as? Bool, true)
+        XCTAssertEqual(hostingMetadata["NSPrivacyCollectedDataTypeTracking"] as? Bool, false)
+        XCTAssertEqual(
+            hostingMetadata["NSPrivacyCollectedDataTypePurposes"] as? [String],
+            ["NSPrivacyCollectedDataTypePurposeAppFunctionality"]
+        )
         let userDefaults = try XCTUnwrap(accessedTypes.first {
             $0["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategoryUserDefaults"
         })
         XCTAssertEqual(userDefaults["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])
+        let systemBootTime = try XCTUnwrap(accessedTypes.first {
+            $0["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategorySystemBootTime"
+        })
+        XCTAssertEqual(systemBootTime["NSPrivacyAccessedAPITypeReasons"] as? [String], ["35F9.1"])
     }
 
     @MainActor

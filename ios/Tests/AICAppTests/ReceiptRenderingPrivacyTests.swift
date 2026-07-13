@@ -31,11 +31,8 @@ final class ReceiptRenderingPrivacyTests: XCTestCase {
         let result = fixtureResult()
         let payload = ReceiptComposer.make(
             result: result,
-            username: "chi_tester",
-            showUsername: false,
             locationMode: .hidden
         )
-        XCTAssertNil(payload.username)
         XCTAssertNil(payload.locationLabel)
         let artifact = try ReceiptArtifactRenderer.render(payload)
         defer { try? FileManager.default.removeItem(at: artifact.fileURL) }
@@ -45,8 +42,6 @@ final class ReceiptRenderingPrivacyTests: XCTestCase {
     private func fixturePayload() -> CookedReceiptPayload {
         ReceiptComposer.make(
             result: fixtureResult(),
-            username: "chi_tester",
-            showUsername: true,
             locationMode: .neighborhood
         )
     }

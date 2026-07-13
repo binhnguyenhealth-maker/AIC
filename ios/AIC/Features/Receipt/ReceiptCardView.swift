@@ -56,20 +56,10 @@ struct ReceiptCardView: View {
                         receiptPill("≈\(payload.estimatedIncidentCount) estimated incidents", icon: "doc.text.fill", scale: scale)
                     }
 
-                    if payload.username != nil || payload.locationLabel != nil {
-                        HStack(spacing: 7 * scale) {
-                            if let username = payload.username {
-                                Text("@\(username)")
-                            }
-                            if payload.username != nil, payload.locationLabel != nil {
-                                Text("•").foregroundStyle(AICTheme.secondaryText)
-                            }
-                            if let location = payload.locationLabel {
-                                Text(location)
-                            }
-                        }
-                        .font(.system(size: 12 * scale, weight: .bold))
-                        .padding(.top, 15 * scale)
+                    if let location = payload.locationLabel {
+                        Text(location)
+                            .font(.system(size: 12 * scale, weight: .bold))
+                            .padding(.top, 15 * scale)
                     }
 
                     Text(payload.broadTimeBucket)

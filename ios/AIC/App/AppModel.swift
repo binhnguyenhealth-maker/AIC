@@ -74,9 +74,11 @@ final class AppModel: ObservableObject {
     enum Phase: Equatable {
         case launching
         case guest
+#if !GUEST_ONLY_V1
         case signedOut
         case needsUsername
         case ready
+#endif
     }
 
     @Published private(set) var phase: Phase = .launching
@@ -89,7 +91,9 @@ final class AppModel: ObservableObject {
             userDefaults.set(measurementPreference.rawValue, forKey: Self.measurementPreferenceKey)
         }
     }
+#if !GUEST_ONLY_V1
     @Published var isBusy = false
+#endif
     @Published var presentedError: String?
 
 #if !GUEST_ONLY_V1
@@ -125,20 +129,20 @@ final class AppModel: ObservableObject {
     }
 #endif
 
-#if GUEST_ONLY_V1
-    var username: String { "" }
-    var isSignedIn: Bool { false }
-#else
+#if !GUEST_ONLY_V1
     var username: String { session?.username ?? "" }
     var isSignedIn: Bool { session != nil }
 #endif
     var distanceSystem: AICDistanceSystem { measurementPreference.resolvedSystem() }
 
+#if GUEST_ONLY_V1
+    func prepare() {
+        guard phase == .launching else { return }
+        phase = .guest
+    }
+#else
     func restoreSession() async {
         guard phase == .launching else { return }
-#if GUEST_ONLY_V1
-        phase = .guest
-#else
         do {
             guard var restored = try sessionStore.load() else {
                 phase = .guest
@@ -160,10 +164,8 @@ final class AppModel: ObservableObject {
             session = nil
             phase = .guest
         }
-#endif
     }
 
-#if !GUEST_ONLY_V1
     func continueWithoutAccount() {
         session = nil
         usernameDraft = ""
@@ -298,10 +300,6 @@ final class AppModel: ObservableObject {
         }
     }
 
-    func present(_ message: String) {
-        presentedError = message
-    }
-
     private func credentialString(from data: Data) -> String? {
         guard let string = String(data: data, encoding: .utf8), !string.isEmpty else { return nil }
         return string
@@ -324,9 +322,7 @@ final class AppModel: ObservableObject {
     }
 #endif
 
-#if GUEST_ONLY_V1
     func present(_ message: String) {
         presentedError = message
     }
-#endif
 }

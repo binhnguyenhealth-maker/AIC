@@ -31,7 +31,46 @@ future work.
 
 > **Renewal deadline:** the status committed for sequence 2 expires at
 > **2026-07-20 02:40:16 UTC**. Publish a reviewed, higher-sequence issuance well
-> before that time. CI fails when less than 24 hours remain.
+> before that time. The daily workflow alerts and fails at 72 hours remaining;
+> validation hard-fails at 24 hours remaining.
+
+## Daily expiry monitor
+
+`.github/workflows/pack-status-monitor.yml` runs every day at 09:17 UTC and can
+also be started manually. It is deliberately read-only. The monitor:
+
+- requires the operations copy, web publish copy, bundled bootstrap, and live
+  response to be byte-for-byte identical;
+- requires the decoded signed payload bytes to match `status-payload.v1.json`;
+- reuses `AICPackStatusValidation` to verify the pinned two-of-three Ed25519
+  signatures, bounded lifetime, and shipped-pack hash/status;
+- requires the live fixed URL to return direct HTTPS `application/json` within
+  the response-size limit; and
+- reports the sequence, pack hash, expiry, and remaining lifetime without
+  reading or printing private signing material.
+
+The policy has two gates. At 72 hours remaining the command emits a renewal
+warning; the scheduled workflow uses `--fail-on-warning`, so that warning also
+turns the Action red and triggers the repository's normal failed-workflow
+notification path. At 24 hours remaining the validator hard-fails even without
+that option. Any byte mismatch, fetch failure, invalid signature, withdrawn or
+missing shipped pack, malformed object, or expired object fails immediately.
+
+Run the same checks locally (the only network operation is a read-only GET):
+
+```sh
+python3 -m unittest operations/pack-status/test_validate_status.py -v
+python3 operations/pack-status/validate_status.py \
+  --warning-hours 72 \
+  --hard-fail-hours 24
+```
+
+The first 72-hour alert is the issuance deadline, not an invitation to wait for
+the 24-hour hard stop. The release owner should assign a primary and backup
+responder in repository settings, confirm failed-workflow notifications are
+enabled, issue a reviewed higher sequence, deploy the exact checked-in bytes,
+and rerun the workflow. GitHub-hosted schedules are best-effort; do not treat
+this monitor as a replacement for the documented manual renewal calendar.
 
 ## Key ceremony and issuance
 

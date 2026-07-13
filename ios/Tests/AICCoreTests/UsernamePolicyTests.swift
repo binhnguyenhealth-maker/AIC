@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import XCTest
 @testable import AICCore
 
@@ -16,3 +17,4 @@ final class UsernamePolicyTests: XCTestCase {
         XCTAssertEqual(UsernamePolicy.validate("support"), .invalid(message: "That username is reserved."))
     }
 }
+#endif

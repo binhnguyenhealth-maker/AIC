@@ -143,6 +143,7 @@ public enum ManualLocationFallback: Equatable, Sendable {
     }
 }
 
+#if !GUEST_ONLY_V1
 public struct AuthSession: Codable, Equatable, Sendable {
     public let accountID: String
     public let accessToken: String
@@ -164,3 +165,4 @@ public struct AuthSession: Codable, Equatable, Sendable {
         self.username = username
     }
 }
+#endif

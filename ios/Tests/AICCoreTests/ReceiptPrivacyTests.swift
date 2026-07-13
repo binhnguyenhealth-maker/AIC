@@ -21,8 +21,6 @@ final class ReceiptPrivacyTests: XCTestCase {
     func testReceiptSchemaCannotEncodePreciseLocation() throws {
         let payload = ReceiptComposer.make(
             result: result,
-            username: "chi_tester",
-            showUsername: true,
             locationMode: .neighborhood
         )
         let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(payload))
@@ -31,37 +29,44 @@ final class ReceiptPrivacyTests: XCTestCase {
         XCTAssertEqual(ReceiptPrivacyAudit.forbiddenKeys(in: object), [])
     }
 
-    func testUsernameAndLocationCanBothBeHidden() {
+    func testLocationCanBeHidden() {
         let payload = ReceiptComposer.make(
             result: result,
-            username: "chi_tester",
-            showUsername: false,
             locationMode: .hidden
         )
-        XCTAssertNil(payload.username)
         XCTAssertNil(payload.locationLabel)
     }
 
-    func testGuestReceiptCannotEncodeAnEmptyUsername() throws {
+    func testGuestReceiptCannotEncodeIdentityFields() throws {
         let payload = ReceiptComposer.make(
             result: result,
-            username: "",
-            showUsername: true,
             locationMode: .neighborhood
         )
 
-        XCTAssertNil(payload.username)
         let object = try XCTUnwrap(
             JSONSerialization.jsonObject(with: JSONEncoder().encode(payload)) as? [String: Any]
         )
         XCTAssertNil(object["username"])
+        XCTAssertNil(object["account"])
+        XCTAssertNil(object["account_id"])
+        XCTAssertEqual(ReceiptPrivacyAudit.forbiddenKeys(in: object), [])
+    }
+
+    func testPrivacyAuditRejectsIdentityFields() {
+        let object: [String: Any] = [
+            "username": "guest",
+            "nested": ["account_id": "account-1"]
+        ]
+
+        XCTAssertEqual(
+            ReceiptPrivacyAudit.forbiddenKeys(in: object),
+            Set(["username", "account_id"])
+        )
     }
 
     func testNeighborhoodOffFallsBackToCityOnly() {
         let payload = ReceiptComposer.make(
             result: result,
-            username: "chi_tester",
-            showUsername: true,
             locationMode: .cityOnly
         )
         XCTAssertEqual(payload.locationLabel, "Chicago")

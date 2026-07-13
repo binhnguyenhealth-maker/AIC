@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import Foundation
 
 public enum UsernameValidation: Equatable, Sendable {
@@ -41,3 +42,4 @@ public enum UsernamePolicy {
         return .valid(normalized: normalized)
     }
 }
+#endif

@@ -771,6 +771,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.binhnguyenhealth.aic.core;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GUEST_ONLY_V1";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -788,6 +789,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.binhnguyenhealth.aic.tests;
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GUEST_ONLY_V1";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AIC.app/AIC";
 			};

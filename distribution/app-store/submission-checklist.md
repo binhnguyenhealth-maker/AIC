@@ -4,14 +4,14 @@
 
 - [x] iOS project generation succeeds
 - [x] iOS Simulator build, install, and launch succeed in CI
-- [x] Swift Package tests pass (40 tests)
-- [x] App-hosted Simulator unit/privacy tests pass (59 tests)
+- [x] Swift Package tests pass in normal (48 tests) and guest Release mode (46 tests)
+- [x] App-hosted Simulator unit/privacy tests pass (67 tests)
 - [x] Clean installs open the guest-only scan flow
 - [x] Bundled packs fail closed at the documented fresh-until boundary
 - [x] Every generated score and receipt shows the exact source-through date and a not-live label
 - [x] Release version is 1.0.0 (build 1)
 - [x] Release source has no account endpoint, account UI, or Sign in with Apple entitlement
-- [x] Signed App Store IPA contains one privacy manifest with no collected-data declarations
+- [ ] Rebuilt signed App Store IPA contains one privacy manifest declaring only linked Other Data for App Functionality, with tracking disabled
 - [x] App icon and required screenshots are generated and visually inspected
 - [x] Privacy policy URL returns HTTP 200
 - [x] Support URL returns HTTP 200

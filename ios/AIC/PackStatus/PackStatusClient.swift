@@ -29,6 +29,8 @@ enum PackStatusGateError: Error, Equatable, LocalizedError {
 private struct PersistedPackStatus: Codable, Equatable {
     let envelopeData: Data
     let checkpoint: PackStatusCheckpoint
+    // These legacy key names are retained for compatibility with pre-release
+    // installs. They now store the durable trusted floor and its latest anchor.
     let verifiedWallClockUnix: TimeInterval
     let verifiedSystemUptime: TimeInterval
     let verifiedBootTimeUnix: TimeInterval
@@ -98,6 +100,7 @@ actor PackStatusClient: PackStatusAuthorizing {
     private let session: URLSession
     private var loadedState = false
     private var state: PersistedPackStatus?
+    private var requiresNetworkRefresh = false
     private var lastRefreshAttempt: Date?
     private var packHashes: [URL: String] = [:]
 
@@ -123,29 +126,53 @@ actor PackStatusClient: PackStatusAuthorizing {
 
     func authorize(packAt url: URL, refresh: Bool) async throws {
         let packSHA = try cachedPackSHA(for: url)
-        try loadStateIfNeeded()
+        do {
+            try loadStateIfNeeded()
+            if !requiresNetworkRefresh {
+                do {
+                    try advanceAndPersistTrustedTime()
+                } catch {
+                    // A changed boot identity or ambiguous clock must be
+                    // reanchored by a signed HTTPS response. Persistence still
+                    // remains mandatory before authorization.
+                    requiresNetworkRefresh = state != nil
+                    if state == nil { throw error }
+                }
+            }
+        } catch {
+            // Malformed, rolled-back, or unavailable protected state cannot be
+            // used to authorize a scan.
+            throw PackStatusGateError.statusUnavailable
+        }
 
         if state?.checkpoint.withdrawnPackSHA256.contains(packSHA) == true {
             throw PackStatusGateError.withdrawn(reasonCode: "previously-verified")
         }
 
-        if refresh, shouldRefresh() {
+        let requiredRefresh = requiresNetworkRefresh
+        if requiredRefresh || (refresh && shouldRefresh()) {
             lastRefreshAttempt = Date()
             do {
                 try await refreshFromNetwork(forPackSHA: packSHA)
+                requiresNetworkRefresh = false
             } catch let error as PackStatusGateError {
                 switch error {
                 case .withdrawn, .packNotListed:
                     throw error
                 case .invalidConfiguration, .statusUnavailable:
-                    break
+                    if requiredRefresh { throw PackStatusGateError.statusUnavailable }
                 }
             } catch is PackStatusStoreError {
                 throw PackStatusGateError.statusUnavailable
             } catch {
                 // A network, signature, expiry, rollback, or CDN error never
                 // replaces a still-valid cached status.
+                if requiredRefresh { throw PackStatusGateError.statusUnavailable }
             }
+        }
+
+        guard !requiresNetworkRefresh else {
+            throw PackStatusGateError.statusUnavailable
         }
 
         if state == nil {
@@ -163,7 +190,9 @@ actor PackStatusClient: PackStatusAuthorizing {
                 envelopeData: state.envelopeData,
                 previous: state.checkpoint,
                 now: now,
-                trustedTimeFloor: trustedTimeFloor(for: state, now: now)
+                trustedTimeFloor: Date(
+                    timeIntervalSince1970: state.verifiedWallClockUnix
+                )
             )
         } catch let error as PackStatusVerificationError {
             throw error
@@ -206,17 +235,26 @@ actor PackStatusClient: PackStatusAuthorizing {
             throw PackStatusGateError.statusUnavailable
         }
         let wallClock = Date()
-        let serverDate = Self.httpDate(http.value(forHTTPHeaderField: "Date"))
-        let verificationNow = max(wallClock, serverDate ?? .distantPast)
+        guard let serverDate = Self.httpDate(http.value(forHTTPHeaderField: "Date")) else {
+            throw PackStatusGateError.statusUnavailable
+        }
+        let verificationNow = max(wallClock, serverDate)
         let verified = try verifier.verify(
             envelopeData: data,
             previous: state?.checkpoint,
             now: verificationNow,
-            trustedTimeFloor: state.map { trustedTimeFloor(for: $0, now: wallClock) }
+            trustedTimeFloor: state.map {
+                Date(timeIntervalSince1970: $0.verifiedWallClockUnix)
+            }
         )
         let gateError = statusError(verified, packSHA: packSHA)
         do {
-            try persist(verified, packSHA: packSHA, observedAt: verificationNow)
+            try persist(
+                verified,
+                packSHA: packSHA,
+                trustedAt: verificationNow,
+                localWallClock: wallClock
+            )
         } catch {
             // Receiving a valid withdrawal or omission always fails closed,
             // even if protected persistence is temporarily unavailable.
@@ -230,29 +268,75 @@ actor PackStatusClient: PackStatusAuthorizing {
         guard let bootstrapData else { throw PackStatusGateError.invalidConfiguration }
         let now = Date()
         let verified = try verifier.verify(envelopeData: bootstrapData, now: now)
-        try persist(verified, packSHA: packSHA, observedAt: now)
+        try persist(
+            verified,
+            packSHA: packSHA,
+            trustedAt: now,
+            localWallClock: now
+        )
     }
 
     private func persist(
         _ verified: VerifiedPackStatus,
         packSHA: String,
-        observedAt: Date
+        trustedAt: Date,
+        localWallClock: Date
     ) throws {
         let uptime = ProcessInfo.processInfo.systemUptime
+        let trustedTime: PackStatusTrustedTime
+        if let state {
+            trustedTime = try PackStatusTrustedTime(
+                wallClockFloorUnix: state.verifiedWallClockUnix,
+                anchorSystemUptime: state.verifiedSystemUptime,
+                anchorBootTimeUnix: state.verifiedBootTimeUnix
+            ).refreshed(
+                trustedWallClock: trustedAt,
+                localWallClock: localWallClock,
+                systemUptime: uptime
+            )
+        } else {
+            trustedTime = try PackStatusTrustedTime(
+                wallClock: trustedAt,
+                systemUptime: uptime
+            )
+        }
         let newState = PersistedPackStatus(
             envelopeData: verified.envelopeData,
             checkpoint: verified.checkpoint(
                 forPackSHA256: packSHA,
                 previous: state?.checkpoint
             ),
-            verifiedWallClockUnix: observedAt.timeIntervalSince1970,
-            verifiedSystemUptime: uptime,
-            verifiedBootTimeUnix: observedAt.timeIntervalSince1970 - uptime
+            verifiedWallClockUnix: trustedTime.wallClockFloorUnix,
+            verifiedSystemUptime: trustedTime.anchorSystemUptime,
+            verifiedBootTimeUnix: trustedTime.anchorBootTimeUnix
         )
         // Persistence happens before the status is acted on. If Keychain is not
         // available, scanning fails rather than accepting an unpersisted state.
         try stateStore.save(newState)
         state = newState
+    }
+
+    private func advanceAndPersistTrustedTime(
+        now: Date = Date(),
+        systemUptime: TimeInterval = ProcessInfo.processInfo.systemUptime
+    ) throws {
+        guard let current = state else { return }
+        let trustedTime = try PackStatusTrustedTime(
+            wallClockFloorUnix: current.verifiedWallClockUnix,
+            anchorSystemUptime: current.verifiedSystemUptime,
+            anchorBootTimeUnix: current.verifiedBootTimeUnix
+        ).advanced(wallClock: now, systemUptime: systemUptime)
+        let advancedState = PersistedPackStatus(
+            envelopeData: current.envelopeData,
+            checkpoint: current.checkpoint,
+            verifiedWallClockUnix: trustedTime.wallClockFloorUnix,
+            verifiedSystemUptime: trustedTime.anchorSystemUptime,
+            verifiedBootTimeUnix: trustedTime.anchorBootTimeUnix
+        )
+        // Save before any cached status is acted on. Reboots and process
+        // restarts therefore reload at least the last authorization floor.
+        try stateStore.save(advancedState)
+        state = advancedState
     }
 
     private func requireActive(_ verified: VerifiedPackStatus, packSHA: String) throws {
@@ -273,16 +357,6 @@ actor PackStatusClient: PackStatusAuthorizing {
         let digest = try PackStatusVerifier.sha256Hex(fileAt: url)
         packHashes[url] = digest
         return digest
-    }
-
-    private func trustedTimeFloor(for state: PersistedPackStatus, now: Date) -> Date {
-        let uptime = ProcessInfo.processInfo.systemUptime
-        let bootTime = now.timeIntervalSince1970 - uptime
-        let sameBoot = abs(bootTime - state.verifiedBootTimeUnix) < 10 && uptime >= state.verifiedSystemUptime
-        let floorUnix = sameBoot
-            ? state.verifiedWallClockUnix + (uptime - state.verifiedSystemUptime)
-            : state.verifiedWallClockUnix
-        return Date(timeIntervalSince1970: floorUnix)
     }
 
     private static func validEndpoint(_ rawValue: String?) -> URL? {

@@ -133,21 +133,21 @@ try require(
     ChicagoScanResult.estimateDisclosure.lowercased().contains("estimates"),
     "estimated-count disclosure drifted"
 )
+#if !GUEST_ONLY_V1
 try require(
     UsernamePolicy.validate("chi_beta_7") == .valid(normalized: "chi_beta_7"),
     "username policy rejected a valid handle"
 )
+#endif
 
 let receipt = ReceiptComposer.make(
     result: result,
-    username: "chi_beta_7",
-    showUsername: false,
     locationMode: .hidden
 )
 let encoded = try JSONEncoder().encode(receipt)
 let object = try JSONSerialization.jsonObject(with: encoded)
 try require(ReceiptPrivacyAudit.forbiddenKeys(in: object).isEmpty, "receipt encoded a precise-location field")
-try require(receipt.username == nil && receipt.locationLabel == nil, "receipt visibility controls failed")
+try require(receipt.locationLabel == nil, "receipt location visibility control failed")
 
 // Exclude pack opening and the first scan from the latency sample.
 _ = try pack.scan(at: sampleCoordinates[0])

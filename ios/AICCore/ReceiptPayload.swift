@@ -16,7 +16,6 @@ public enum ReceiptLocationMode: String, Codable, CaseIterable, Sendable {
 
 public struct CookedReceiptPayload: Codable, Equatable, Sendable {
     public let schemaVersion: Int
-    public let username: String?
     public let locationMode: ReceiptLocationMode
     public let locationLabel: String?
     public let broadTimeBucket: String
@@ -28,7 +27,6 @@ public struct CookedReceiptPayload: Codable, Equatable, Sendable {
     public let disclaimer: String
 
     public init(
-        username: String?,
         locationMode: ReceiptLocationMode,
         locationLabel: String?,
         broadTimeBucket: String,
@@ -39,7 +37,6 @@ public struct CookedReceiptPayload: Codable, Equatable, Sendable {
         sourceThroughDate: String
     ) {
         schemaVersion = 2
-        self.username = username
         self.locationMode = locationMode
         self.locationLabel = locationLabel
         self.broadTimeBucket = broadTimeBucket
@@ -55,13 +52,10 @@ public struct CookedReceiptPayload: Codable, Equatable, Sendable {
 public enum ReceiptComposer {
     public static func make(
         result: ChicagoScanResult,
-        username: String,
-        showUsername: Bool,
         locationMode: ReceiptLocationMode,
         date: Date = Date(),
         calendar: Calendar = .current
     ) -> CookedReceiptPayload {
-        let normalizedUsername = UsernamePolicy.normalize(username)
         let label: String?
         switch locationMode {
         case .neighborhood:
@@ -73,7 +67,6 @@ public enum ReceiptComposer {
         }
 
         return CookedReceiptPayload(
-            username: showUsername && !normalizedUsername.isEmpty ? normalizedUsername : nil,
             locationMode: locationMode,
             locationLabel: label,
             broadTimeBucket: broadTimeBucket(for: date, calendar: calendar),
@@ -103,7 +96,8 @@ public enum ReceiptPrivacyAudit {
     public static let forbiddenEncodedKeys: Set<String> = [
         "latitude", "longitude", "coordinate", "coordinates", "address", "route",
         "pin", "cell", "cell_id", "scan_id", "timestamp", "exact_time",
-        "contributingincidentcount", "exactincidentcount", "exact_count", "cell_total", "residual_total"
+        "contributingincidentcount", "exactincidentcount", "exact_count", "cell_total", "residual_total",
+        "username", "account", "account_id", "accountid"
     ]
 
     public static func forbiddenKeys(in encodedObject: Any) -> Set<String> {

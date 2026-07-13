@@ -37,9 +37,9 @@ struct SettingsScreen: View {
                         }
                     }
 #else
-                    Section("Private on-device mode") {
-                        Label("No account required", systemImage: "iphone.and.arrow.forward")
-                        Text("This version has no account or sign-in feature. Scans and Cooked Receipts are created on this iPhone.")
+                    Section("On-device mode") {
+                        Label("Private by default", systemImage: "iphone.and.arrow.forward")
+                        Text("Scans and Cooked Receipts are created on this iPhone. Scan locations are never uploaded or saved.")
                             .font(.caption)
                             .foregroundStyle(AICTheme.secondaryText)
                     }

@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AICCore
 import XCTest
 @testable import AIC
@@ -101,3 +102,4 @@ private final class RecordingURLProtocol: URLProtocol {
 
     override func stopLoading() {}
 }
+#endif

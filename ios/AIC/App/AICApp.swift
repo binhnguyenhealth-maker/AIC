@@ -8,7 +8,11 @@ struct AICApp: App {
         WindowGroup {
             RootView(model: model)
                 .preferredColorScheme(.dark)
+#if GUEST_ONLY_V1
+                .task { model.prepare() }
+#else
                 .task { await model.restoreSession() }
+#endif
         }
     }
 }
@@ -30,11 +34,10 @@ private struct RootView: View {
             case .needsUsername:
                 UsernameScreen(model: model)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
-#else
-            case .signedOut, .needsUsername:
+            case .ready:
                 readyView
 #endif
-            case .guest, .ready:
+            case .guest:
                 readyView
                     .transition(.opacity)
             }
@@ -62,7 +65,7 @@ private struct RootView: View {
                 ) {}
             }
         case .receipt:
-            NavigationStack { ReceiptScreen(result: ShowcaseData.result, username: model.username) }
+            NavigationStack { ReceiptScreen(result: ShowcaseData.result) }
         case .settings:
             SettingsScreen(model: model)
         case .passport:

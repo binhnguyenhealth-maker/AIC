@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AICCore
 import XCTest
 @testable import AIC
@@ -147,3 +148,4 @@ private final class FakeAccountAPI: AccountAPIProtocol {
         deletionCount += 1
     }
 }
+#endif

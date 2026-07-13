@@ -36,7 +36,7 @@ struct MainFlowView: View {
                         distanceSystem: model.distanceSystem
                     ) { path.append(.receipt(scan)) }
                 case let .receipt(scan):
-                    ReceiptScreen(result: scan.result, username: model.username)
+                    ReceiptScreen(result: scan.result)
                 }
             }
         }

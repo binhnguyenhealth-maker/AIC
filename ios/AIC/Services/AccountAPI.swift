@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AICCore
 import Foundation
 
@@ -291,3 +292,4 @@ actor AccountAPI: AccountAPIProtocol {
         }
     }
 }
+#endif

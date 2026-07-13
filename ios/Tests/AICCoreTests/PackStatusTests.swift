@@ -128,6 +128,202 @@ final class PackStatusTests: XCTestCase {
         }
     }
 
+    func testTrustedTimeRejectsNewClientAfterRebootAndClockRollback() throws {
+        let initialUptime: TimeInterval = 10_000
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: initialUptime
+        )
+        let afterExpiry = now.addingTimeInterval(8 * 24 * 60 * 60)
+        let beforeRestart = try initial.advanced(
+            wallClock: afterExpiry,
+            systemUptime: initialUptime + 8 * 24 * 60 * 60
+        )
+
+        // Encoding and decoding models a new client loading ThisDeviceOnly
+        // Keychain state after a reboot. The wall clock has been rolled back.
+        let restored = try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: JSONEncoder().encode(beforeRestart)
+        )
+        XCTAssertThrowsError(try restored.advanced(
+            wallClock: now.addingTimeInterval(-24 * 60 * 60),
+            systemUptime: 30
+        )) { error in
+            XCTAssertEqual(error as? PackStatusTrustedTimeError, .invalidState)
+        }
+    }
+
+    func testNewBootRequiresRefreshEvenAtFloorPlusOneSecond() throws {
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: 30
+        )
+        let beforeRestart = try initial.advanced(
+            wallClock: now.addingTimeInterval(60),
+            systemUptime: 90
+        )
+        let restored = try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: JSONEncoder().encode(beforeRestart)
+        )
+
+        // A new boot can eventually exceed the prior boot's small uptime. A
+        // wall clock held just above the floor must not reauthorize cached
+        // status, because powered-off elapsed time is unknown.
+        XCTAssertThrowsError(try restored.advanced(
+            wallClock: Date(timeIntervalSince1970: beforeRestart.wallClockFloorUnix + 1),
+            systemUptime: 120
+        )) { error in
+            XCTAssertEqual(error as? PackStatusTrustedTimeError, .invalidState)
+        }
+    }
+
+    func testSignificantClockRollbackFailsClosedAcrossRelaunch() throws {
+        let initialUptime: TimeInterval = 10_000
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: initialUptime
+        )
+        let oneHour: TimeInterval = 60 * 60
+        let beforeRollback = try initial.advanced(
+            wallClock: now.addingTimeInterval(oneHour),
+            systemUptime: initialUptime + oneHour
+        )
+        let restored = try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: JSONEncoder().encode(beforeRollback)
+        )
+        XCTAssertThrowsError(try restored.advanced(
+            wallClock: now.addingTimeInterval(-oneHour),
+            systemUptime: initialUptime + oneHour + 60
+        )) { error in
+            XCTAssertEqual(error as? PackStatusTrustedTimeError, .invalidState)
+        }
+    }
+
+    func testTrustedTimeAllowsForwardTimeAndOfflineUseInsideSignedWindow() throws {
+        let envelope = try signedEnvelope(makePayload(), signers: [0, 1])
+        let initialUptime: TimeInterval = 5_000
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: initialUptime
+        )
+        let twoDays: TimeInterval = 2 * 24 * 60 * 60
+        let advanced = try initial.advanced(
+            wallClock: now.addingTimeInterval(twoDays),
+            systemUptime: initialUptime + twoDays
+        )
+        XCTAssertEqual(
+            advanced.wallClockFloorUnix,
+            now.addingTimeInterval(twoDays).timeIntervalSince1970,
+            accuracy: 0.001
+        )
+
+        let restoredSameBoot = try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: JSONEncoder().encode(advanced)
+        )
+        let offlineAfterRelaunch = try restoredSameBoot.advanced(
+            wallClock: now.addingTimeInterval(twoDays + 60),
+            systemUptime: initialUptime + twoDays + 60
+        )
+        let verified = try verifier.verify(
+            envelopeData: envelope,
+            now: now.addingTimeInterval(twoDays + 60),
+            trustedTimeFloor: offlineAfterRelaunch.floor
+        )
+
+        XCTAssertEqual(verified.entry(forPackSHA256: packSHA)?.status, .active)
+        XCTAssertEqual(
+            offlineAfterRelaunch.wallClockFloorUnix,
+            advanced.wallClockFloorUnix + 60,
+            accuracy: 0.001
+        )
+    }
+
+    func testRebootWithForwardWallClockRequiresTrustedRefresh() throws {
+        let envelope = try signedEnvelope(makePayload(), signers: [0, 1])
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: 20_000
+        )
+        let oneDay: TimeInterval = 24 * 60 * 60
+        let beforeRestart = try initial.advanced(
+            wallClock: now.addingTimeInterval(oneDay),
+            systemUptime: 20_000 + oneDay
+        )
+        let restored = try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: JSONEncoder().encode(beforeRestart)
+        )
+        XCTAssertThrowsError(try restored.advanced(
+            wallClock: now.addingTimeInterval(2 * oneDay),
+            systemUptime: 30
+        )) { error in
+            XCTAssertEqual(error as? PackStatusTrustedTimeError, .invalidState)
+        }
+
+        let afterRefresh = try restored.refreshed(
+            trustedWallClock: now.addingTimeInterval(2 * oneDay),
+            localWallClock: now.addingTimeInterval(2 * oneDay),
+            systemUptime: 30
+        )
+        let verified = try verifier.verify(
+            envelopeData: envelope,
+            now: now.addingTimeInterval(2 * oneDay),
+            trustedTimeFloor: afterRefresh.floor
+        )
+
+        XCTAssertEqual(verified.entry(forPackSHA256: packSHA)?.status, .active)
+        XCTAssertEqual(
+            afterRefresh.wallClockFloorUnix,
+            now.addingTimeInterval(2 * oneDay).timeIntervalSince1970,
+            accuracy: 0.001
+        )
+    }
+
+    func testTrustedRefreshNeverLowersPersistedFloor() throws {
+        let initial = try PackStatusTrustedTime(
+            wallClock: now,
+            systemUptime: 1_000
+        )
+        let twoDays: TimeInterval = 2 * 24 * 60 * 60
+        let advanced = try initial.advanced(
+            wallClock: now.addingTimeInterval(twoDays),
+            systemUptime: 1_000 + twoDays
+        )
+
+        let refreshed = try advanced.refreshed(
+            trustedWallClock: now.addingTimeInterval(24 * 60 * 60),
+            localWallClock: now.addingTimeInterval(-24 * 60 * 60),
+            systemUptime: 30
+        )
+
+        XCTAssertEqual(
+            refreshed.wallClockFloorUnix,
+            advanced.wallClockFloorUnix,
+            accuracy: 0.001
+        )
+    }
+
+    func testMalformedOrRolledBackTrustedTimeStateFailsClosed() throws {
+        let anchorUptime: TimeInterval = 100
+        let anchorBootTime = now.timeIntervalSince1970 - anchorUptime
+        let rolledBackState = try JSONSerialization.data(withJSONObject: [
+            "wallClockFloorUnix": now.timeIntervalSince1970 - 1,
+            "anchorSystemUptime": anchorUptime,
+            "anchorBootTimeUnix": anchorBootTime,
+        ])
+
+        XCTAssertThrowsError(try JSONDecoder().decode(
+            PackStatusTrustedTime.self,
+            from: rolledBackState
+        )) { error in
+            XCTAssertTrue(error is DecodingError)
+        }
+    }
+
     func testCatalogRejectsDuplicateHashesAndUnboundedLifetime() throws {
         let duplicate = PackStatusPayload(
             schemaVersion: 1,

@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AICCore
 import Foundation
 import Security
@@ -67,3 +68,4 @@ struct KeychainSessionStore: SessionStoring {
         }
     }
 }
+#endif
