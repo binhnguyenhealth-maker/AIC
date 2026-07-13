@@ -139,7 +139,7 @@ struct HomeScreen: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "lock.fill")
                 .foregroundStyle(AICTheme.mint)
-            Text("Your point and scan history stay on this iPhone. AIC sends no coordinate, address, route, or geographic cell to its account service.")
+            Text("Your point and scan history stay on this iPhone. AIC sends no coordinate, address, route, or geographic cell to AIC.")
                 .font(.caption)
                 .foregroundStyle(AICTheme.secondaryText)
         }

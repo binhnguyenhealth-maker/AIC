@@ -1,17 +1,22 @@
+#if !GUEST_ONLY_V1
 import AuthenticationServices
+#endif
 import SwiftUI
 
 struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var model: AppModel
 
+#if !GUEST_ONLY_V1
     @State private var showDeletionFlow = false
+#endif
 
     var body: some View {
         NavigationStack {
             ZStack {
                 AICBackground()
                 List {
+#if !GUEST_ONLY_V1
                     if model.isSignedIn {
                         Section("Public account") {
                             LabeledContent("Username", value: "@\(model.username)")
@@ -31,6 +36,14 @@ struct SettingsScreen: View {
                             }
                         }
                     }
+#else
+                    Section("Private on-device mode") {
+                        Label("No account required", systemImage: "iphone.and.arrow.forward")
+                        Text("This version has no account or sign-in feature. Scans and Cooked Receipts are created on this iPhone.")
+                            .font(.caption)
+                            .foregroundStyle(AICTheme.secondaryText)
+                    }
+#endif
 
                     Section("Display") {
                         Picker("Distance units", selection: $model.measurementPreference) {
@@ -64,17 +77,13 @@ struct SettingsScreen: View {
                                 Label("Methodology", systemImage: "function")
                             }
                         }
-                        if let deletionURL = configuredURL(for: "AIC_ACCOUNT_DELETION_URL") {
-                            Link(destination: deletionURL) {
-                                Label("Account deletion help", systemImage: "person.crop.circle.badge.minus")
-                            }
-                        }
                         Label("Foreground location only", systemImage: "location.circle")
                         Text("AIC never requests background location and does not save scan history.")
                             .font(.caption)
                             .foregroundStyle(AICTheme.secondaryText)
                     }
 
+#if !GUEST_ONLY_V1
                     if model.isSignedIn {
                         Section {
                             Button("Log out", role: .destructive) {
@@ -94,11 +103,13 @@ struct SettingsScreen: View {
                             Text("Deletion disables the account, revokes Apple and AIC credentials, removes the username and user-controlled account data, and clears local credentials and temporary receipts. The public Chicago data pack contains no account data and may remain.")
                         }
                     }
+#endif
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle(model.isSignedIn ? "Account" : "Settings")
+            .navigationTitle("Settings")
             .toolbar { Button("Done") { dismiss() } }
+#if !GUEST_ONLY_V1
             .sheet(isPresented: $showDeletionFlow) {
                 DeleteAccountSheet(model: model) {
                     showDeletionFlow = false
@@ -115,6 +126,7 @@ struct SettingsScreen: View {
                     }
                 }
             }
+#endif
         }
     }
 
@@ -125,6 +137,7 @@ struct SettingsScreen: View {
     }
 }
 
+#if !GUEST_ONLY_V1
 private struct DeleteAccountSheet: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var model: AppModel
@@ -198,3 +211,4 @@ private struct DeleteAccountSheet: View {
         }
     }
 }
+#endif

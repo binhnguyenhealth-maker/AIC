@@ -13,10 +13,9 @@ not a live safety assessment or a prediction of personal risk.
 
 ## Product tour
 
-The Home screen states the product boundary before the first scan. The primary
-flow works without an account, makes both location choices explicit, and confirms
-that the Chicago data pack and scoring operation remain on-device. Sign in with
-Apple is optional in Settings for account and public-username features.
+The Home screen states the product boundary before the first scan. The v1 flow
+has no accounts or sign-in, makes both location choices explicit, and confirms
+that the Chicago data pack and scoring operation remain on-device.
 
 <p align="center">
   <img src="distribution/app-store/screenshots/en-US/01-home-iphone-17-pro-max.png" alt="AIC home screen with a local 0.3-mile historical-data scan" width="31%">
@@ -26,9 +25,8 @@ Apple is optional in Settings for account and public-username features.
 
 ## What I built
 
-- A SwiftUI iOS client with optional Sign in with Apple, username onboarding, local
-  location/manual-pin scanning, results, receipts, settings, logout, and
-  account deletion.
+- A guest-only SwiftUI iOS v1 client with local location/manual-pin scanning,
+  results, receipts, settings, and native sharing.
 - A deterministic Python pipeline that transforms official Chicago data into a
   compact, privacy-coarsened SQLite pack shipped with the app.
 - A Cloudflare Worker account service with encrypted Apple credential storage,
@@ -47,19 +45,13 @@ City of Chicago open data
 Deterministic Python pack builder
         |
         v
-Privacy-coarsened SQLite pack -----> SwiftUI app
-                                         |
-                                         | account operations only
-                                         | (never scan coordinates)
-                                         v
-                              Cloudflare account Worker
-                                         |
-                              Sign in with Apple + D1
+Privacy-coarsened SQLite pack -----> Guest-only SwiftUI app
 ```
 
-The scoring path is local. The account service receives authentication and
-profile operations, but it has no location, scan, route, address, or receipt
-endpoint.
+The released v1 scoring and receipt paths are local. The repository retains an
+unreleased account-service implementation for possible later work, but the v1
+Release build exposes no account UI, carries no Sign in with Apple entitlement,
+and contains no account-service endpoint configuration.
 
 ## Privacy properties
 
@@ -70,19 +62,15 @@ endpoint.
   timestamps, exact cell totals, or scan history.
 - Cooked Receipts are rendered locally and exported without EXIF, GPS, or
   ancillary PNG metadata.
-- Sessions are stored in the iOS Keychain using
-  `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`.
 
 The complete scoring and disclosure method is documented in the
 [Chicago schema-v3 methodology](docs/methodology/BETA_SCORE.md).
 
 ## Security design
 
-The account service validates Apple issuer, audience, signature, token age,
-subject, and hashed nonce. AIC refresh tokens are random opaque values stored
-only as hashes and rotated on use. Account deletion requires a fresh,
-account-bound, one-time proof and handles authorization-token races through a
-bounded encrypted revocation outbox.
+The guest-only v1 has no app account, authentication, or session lifecycle.
+Unreleased account code remains in the repository behind a Release compilation
+gate so it can be revisited without being part of the submitted v1 behavior.
 
 External build inputs are schema-, domain-, complexity-, size-, and
 cardinality-bounded before they can affect release artifacts.

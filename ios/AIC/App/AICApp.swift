@@ -23,12 +23,17 @@ private struct RootView: View {
             case .launching:
                 ProgressView("Opening AIC…")
                     .tint(AICTheme.mint)
+#if !GUEST_ONLY_V1
             case .signedOut:
                 AuthScreen(model: model)
                     .transition(.opacity)
             case .needsUsername:
                 UsernameScreen(model: model)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
+#else
+            case .signedOut, .needsUsername:
+                readyView
+#endif
             case .guest, .ready:
                 readyView
                     .transition(.opacity)

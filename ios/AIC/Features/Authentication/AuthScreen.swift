@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AuthenticationServices
 import SwiftUI
 
@@ -97,3 +98,4 @@ struct AuthScreen: View {
         }
     }
 }
+#endif

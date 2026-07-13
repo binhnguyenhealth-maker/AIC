@@ -1,5 +1,7 @@
 import AICCore
+#if !GUEST_ONLY_V1
 import AuthenticationServices
+#endif
 import Foundation
 
 #if DEBUG
@@ -20,6 +22,7 @@ enum ShowcaseData {
         return Screen(rawValue: value)
     }
 
+#if !GUEST_ONLY_V1
     static let session = AuthSession(
         accountID: "showcase",
         accessToken: "showcase",
@@ -27,6 +30,7 @@ enum ShowcaseData {
         accessTokenExpiresAt: .distantFuture,
         username: "chi_builder"
     )
+#endif
 
     static let result = ChicagoScanResult(
         cookedScore: 75,
@@ -57,11 +61,13 @@ enum ShowcaseData {
 }
 #endif
 
+#if !GUEST_ONLY_V1
 struct AppleCredentialMaterial: Equatable {
     let authorizationCode: String
     let identityToken: String
     let rawNonce: String
 }
+#endif
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -74,8 +80,10 @@ final class AppModel: ObservableObject {
     }
 
     @Published private(set) var phase: Phase = .launching
+#if !GUEST_ONLY_V1
     @Published private(set) var session: AuthSession?
     @Published var usernameDraft = ""
+#endif
     @Published var measurementPreference: AICMeasurementPreference {
         didSet {
             userDefaults.set(measurementPreference.rawValue, forKey: Self.measurementPreferenceKey)
@@ -84,11 +92,20 @@ final class AppModel: ObservableObject {
     @Published var isBusy = false
     @Published var presentedError: String?
 
+#if !GUEST_ONLY_V1
     private let accountAPI: any AccountAPIProtocol
     private let sessionStore: any SessionStoring
+#endif
     private let userDefaults: UserDefaults
     private static let measurementPreferenceKey = "aic.measurement-preference"
 
+#if GUEST_ONLY_V1
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+        measurementPreference = userDefaults.string(forKey: Self.measurementPreferenceKey)
+            .flatMap(AICMeasurementPreference.init(rawValue:)) ?? .automatic
+    }
+#else
     init(
         accountAPI: any AccountAPIProtocol = AccountAPI(),
         sessionStore: any SessionStoring = KeychainSessionStore(),
@@ -106,13 +123,22 @@ final class AppModel: ObservableObject {
         }
 #endif
     }
+#endif
 
+#if GUEST_ONLY_V1
+    var username: String { "" }
+    var isSignedIn: Bool { false }
+#else
     var username: String { session?.username ?? "" }
     var isSignedIn: Bool { session != nil }
+#endif
     var distanceSystem: AICDistanceSystem { measurementPreference.resolvedSystem() }
 
     func restoreSession() async {
         guard phase == .launching else { return }
+#if GUEST_ONLY_V1
+        phase = .guest
+#else
         do {
             guard var restored = try sessionStore.load() else {
                 phase = .guest
@@ -134,8 +160,10 @@ final class AppModel: ObservableObject {
             session = nil
             phase = .guest
         }
+#endif
     }
 
+#if !GUEST_ONLY_V1
     func continueWithoutAccount() {
         session = nil
         usernameDraft = ""
@@ -294,4 +322,11 @@ final class AppModel: ObservableObject {
             rawNonce: rawNonce
         )
     }
+#endif
+
+#if GUEST_ONLY_V1
+    func present(_ message: String) {
+        presentedError = message
+    }
+#endif
 }

@@ -1,3 +1,4 @@
+#if !GUEST_ONLY_V1
 import AICCore
 import SwiftUI
 
@@ -111,3 +112,4 @@ struct UsernameScreen: View {
         }
     }
 }
+#endif

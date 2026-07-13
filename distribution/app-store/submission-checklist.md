@@ -6,24 +6,23 @@
 - [x] iOS Simulator build, install, and launch succeed in CI
 - [x] Swift Package tests pass (24 tests)
 - [x] App-hosted Simulator unit/privacy tests pass (46 tests)
-- [x] Clean installs open the account-free scan flow
+- [x] Clean installs open the guest-only scan flow
 - [x] Bundled packs fail closed at the documented fresh-until boundary
 - [x] Every generated score and receipt shows the exact source-through date and a not-live label
 - [x] Release version is 1.0.0 (build 1)
-- [x] Account and information service URLs respond over HTTPS
-- [ ] Validate production Sign in with Apple, refresh, logout, and deletion end to end
+- [x] Release source has no account endpoint, account UI, or Sign in with Apple entitlement
 - [x] Debug Simulator app contains one privacy manifest; Release archive/readback remains below
 - [x] App icon and required screenshots are generated and visually inspected
 - [x] Privacy policy URL returns HTTP 200
 - [x] Support URL returns HTTP 200
 - [x] App Store copy and review notes drafted
-- [ ] Deploy and read back the updated production privacy, support, methodology, deletion, and terms pages
+- [ ] Deploy and read back the updated guest-only privacy, support, methodology, deletion, and terms pages
 
 ## Apple-account manual gates
 
 - [x] Install Xcode 26.6 and an iOS 26.5 Simulator runtime
 - [ ] Add the founder's Apple Developer team to Xcode
-- [ ] Register the final bundle identifier and enable Sign in with Apple
+- [ ] Register the final bundle identifier (Sign in with Apple is not enabled for v1)
 - [ ] Create or select the App Store Connect app record
 - [ ] Add the App Store Connect review contact and privacy-policy fields
 - [ ] Confirm agreements, tax, and banking status do not block distribution

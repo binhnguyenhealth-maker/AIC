@@ -12,7 +12,7 @@ final class PrivacyConfigurationTests: XCTestCase {
         XCTAssertFalse(backgroundModes.contains("location"))
     }
 
-    func testSignInWithAppleEntitlementIsPresent() throws {
+    func testGuestOnlyReleaseHasNoAccountCapabilityOrEndpoint() throws {
         let iosRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -24,21 +24,29 @@ final class PrivacyConfigurationTests: XCTestCase {
             options: [],
             format: nil
         ) as? [String: Any])
-        XCTAssertEqual(plist["com.apple.developer.applesignin"] as? [String], ["Default"])
+        XCTAssertNil(plist["com.apple.developer.applesignin"])
 
         let project = try String(contentsOf: iosRoot.appendingPathComponent("AIC.xcodeproj/project.pbxproj"))
-        XCTAssertTrue(project.contains("com.apple.SignInWithApple.iOS"))
+        XCTAssertFalse(project.contains("com.apple.SignInWithApple.iOS"))
+        XCTAssertFalse(project.contains("CODE_SIGN_ENTITLEMENTS"))
+
+        let spec = try String(contentsOf: iosRoot.appendingPathComponent("project.yml"))
+        XCTAssertTrue(spec.contains("GUEST_ONLY_V1"))
+        XCTAssertFalse(spec.contains("AIC_API_BASE_URL"))
+        XCTAssertFalse(spec.contains("aic-account-dev"))
     }
 
     func testPublicPolicyURLsAreHTTPS() throws {
         XCTAssertEqual(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String, "Am I Cooked?")
         for key in [
             "AIC_PRIVACY_URL", "AIC_SUPPORT_URL", "AIC_TERMS_URL",
-            "AIC_METHODOLOGY_URL", "AIC_ACCOUNT_DELETION_URL"
+            "AIC_METHODOLOGY_URL"
         ] {
             let raw = try XCTUnwrap(Bundle.main.object(forInfoDictionaryKey: key) as? String)
             XCTAssertEqual(URL(string: raw)?.scheme, "https", key)
         }
+        XCTAssertNil(Bundle.main.object(forInfoDictionaryKey: "AIC_API_BASE_URL"))
+        XCTAssertNil(Bundle.main.object(forInfoDictionaryKey: "AIC_ACCOUNT_DELETION_URL"))
     }
 
     func testMeasurementPreferenceDefaultsToUSForUSLocaleAndMetricElsewhere() {
@@ -73,6 +81,7 @@ final class PrivacyConfigurationTests: XCTestCase {
             format: nil
         ) as? [String: Any])
         let accessedTypes = try XCTUnwrap(manifest["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
+        XCTAssertEqual((manifest["NSPrivacyCollectedDataTypes"] as? [[String: Any]])?.count, 0)
         let userDefaults = try XCTUnwrap(accessedTypes.first {
             $0["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategoryUserDefaults"
         })

@@ -14,21 +14,21 @@ The displayed count and category breakdown are privacy-coarsened estimates. The 
 
 ## Review path
 
-1. Launch the app. Without a stored signed-in session, it opens the account-free Home screen directly.
+1. Launch the app. It opens the guest-only Home screen directly; v1 has no account or sign-in flow.
 2. Tap **Scan My Area**. This is the first point at which location permission is requested.
 3. Alternatively, deny permission and choose **Choose another spot** to use the offline Chicago manual-pin picker.
 4. Inspect the Cooked Score, Chicago percentile, leading category, estimated incident count, and the adjacent **DATA THROUGH [exact date] · NOT LIVE** disclosure.
-5. Open **Cooked Receipt**, confirm that it repeats the exact data-through date and not-live label, independently hide the neighborhood, and invoke the native share sheet. If signed in, the public username is an additional independent visibility control.
+5. Open **Cooked Receipt**, confirm that it repeats the exact data-through date and not-live label, independently hide the neighborhood, and invoke the native share sheet.
 6. Cancel the share sheet; AIC uploads no receipt.
-7. Settings offers optional Sign in with Apple for account and public-username features. Signed-in settings also contain logout and account deletion.
+7. Settings contains display, privacy, support, terms, and methodology controls. It contains no account or authentication control.
 
 ## Location privacy
 
-Normal current-location scans and manual pins are processed on-device against a bundled SQLite data pack. AIC does not transmit scan coordinates, addresses, routes, scan-derived geographic cells, or scan history to its account service. The application does not declare or request background-location access. Receipt images contain no precise location or EXIF/GPS metadata.
+Normal current-location scans and manual pins are processed on-device against a bundled SQLite data pack. AIC does not transmit scan coordinates, addresses, routes, scan-derived geographic cells, or scan history. The application does not declare or request background-location access. Receipt images contain no precise location or EXIF/GPS metadata.
 
 ## Reviewer access
 
-AIC's scan and report flow works without an account. Sign in with Apple is the only optional authentication method; no password or reviewer credential is required. The production service audience and Sign in with Apple entitlement must match the submitted bundle identifier.
+AIC v1 has no account system, authentication UI, reviewer credential, or Sign in with Apple entitlement. All reviewable app functionality is available immediately after launch.
 
 ## Contacts
 
