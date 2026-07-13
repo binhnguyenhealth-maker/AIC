@@ -5,7 +5,7 @@ The single machine-readable source of truth is
 schema-v3 launch hash is:
 
 ```text
-SHA-256 3b7b0b6f8ffca3bdb33e09dae149b099b748e2252a22755330834bea32018072
+SHA-256 a340d5433f43489720609793b332466a8a16b2587052aafb2f34843360ae0f02
 ```
 
 The reviewed human-readable table, including official primary/secondary

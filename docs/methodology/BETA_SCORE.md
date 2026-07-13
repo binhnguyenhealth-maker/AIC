@@ -26,11 +26,11 @@ with any other city.
 - Boundary source: City of Chicago `igwz-8jzy`.
 - Frozen window: `2025-07-01 <= occurrence date < 2026-07-01`.
 - Source-through date: `2026-06-30`.
-- Selected geocoded rows: 139,082.
+- Selected geocoded rows: 139,152.
 - Geocoded rows outside the union of official community areas, excluded before
   aggregation: 433.
-- Eligible source rows aggregated: 138,649.
-- Selected rows missing coordinates, excluded: 49.
+- Eligible source rows aggregated: 138,719.
+- Selected rows missing coordinates, excluded: 24.
 - Selected-primary rows outside the frozen IUCR mapping: 0; any nonzero result
   fails the build.
 
@@ -186,12 +186,12 @@ only in build memory and were not shipped.
 | Metric | Result |
 |---|---:|
 | Cooked Score exactly matched the exact-count baseline | 51.58% |
-| Cooked Score within 5 points | 92.06% |
+| Cooked Score within 5 points | 92.02% |
 | Cooked Score within 10 points | 97.97% |
 | Cooked Score absolute error, p95 | 10 points |
 | Estimated-count absolute error, median | 13 incidents |
 | Estimated-count absolute error, p95 | 54 incidents |
-| Dominant category agreement | 91.54% |
+| Dominant category agreement | 91.51% |
 
 The deterministic cardinal-movement check sampled 2,000 pairs at each distance:
 
@@ -211,13 +211,16 @@ The default standard-library disclosure audit independently rebuilds the cell
 bands from the ignored source snapshot and verifies:
 
 - one eligible event influences at most one cell and one category;
-- 277,298 post-eligibility within-cell relocation trials preserve the released
+- 277,438 post-eligibility within-cell relocation trials preserve the released
   cell;
-- all 5,480 singleton category/cells release as zero;
-- all 3,442 two-incident category/cells release as zero;
+- all 5,478 singleton category/cells release as zero;
+- all 3,446 two-incident category/cells release as zero;
 - every positive band has an underlying count of at least three;
 - no exact/residual total or subcell coordinate is present;
 - the shipped 23,630-row band table exactly matches independent recomputation.
+
+The retained snapshot hashes and this release's machine-audit results are
+recorded in [CHICAGO_V3_RELEASE_EVIDENCE.md](./CHICAGO_V3_RELEASE_EVIDENCE.md).
 
 This is a practical single-release protection, not a formal differential-privacy
 guarantee. Deterministic differencing across future monthly packs could leak

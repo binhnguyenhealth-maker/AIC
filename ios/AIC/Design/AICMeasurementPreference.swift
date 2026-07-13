@@ -6,14 +6,14 @@ enum AICDistanceSystem: Equatable {
 
     var compactRadius: String {
         switch self {
-        case .us: "0.3 MI"
+        case .us: "≈0.31 MI"
         case .metric: "500 M"
         }
     }
 
     var radiusTitle: String {
         switch self {
-        case .us: "Scan a 0.3-mile radius"
+        case .us: "Scan about 0.31 miles"
         case .metric: "Scan a 500 m radius"
         }
     }

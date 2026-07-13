@@ -69,6 +69,7 @@ targets:
         AIC_TERMS_URL: "$(AIC_TERMS_URL)"
         AIC_METHODOLOGY_URL: "$(AIC_METHODOLOGY_URL)"
         AIC_ACCOUNT_DELETION_URL: "$(AIC_ACCOUNT_DELETION_URL)"
+        AIC_PACK_STATUS_URL: "$(AIC_PACK_STATUS_URL)"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.binhnguyenhealth.aic
@@ -83,6 +84,7 @@ targets:
         AIC_TERMS_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/terms/"
         AIC_METHODOLOGY_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/methodology/"
         AIC_ACCOUNT_DELETION_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/account-deletion/"
+        AIC_PACK_STATUS_URL: "https://aic-beta-info.binhnguyenhealth.workers.dev/pack-status/v1/status.json"
 
   AICTests:
     type: bundle.unit-test

@@ -1,0 +1,17 @@
+{
+  "payload" : "eyJleHBpcmVzQXRVbml4IjoxNzg0NTE1MjE2LCJpc3N1ZWRBdFVuaXgiOjE3ODM5MTA0MTYsInBhY2tzIjpbeyJzaGEyNTYiOiIxYTE4NjI5ZmEzNDI5ZWVmZWMxMGQwZDAyNWM4MDEwMmNlN2M0OGE2MzQ1N2U2MDFjMWM0MDQwMDE2ODZjYTMyIiwic3RhdHVzIjoiYWN0aXZlIn1dLCJzY2hlbWFWZXJzaW9uIjoxLCJzZXF1ZW5jZSI6Mn0K",
+  "signatures" : [
+    {
+      "keyID" : "release-a",
+      "signature" : "0i8Yja2aiGmbgDP8SXq2pV5XDDAQkFKQl6SDyx+DGRC1nDwEptT1PTvSzmH1iD5miJ/LG/spqNKfFUuIHKvJCQ=="
+    },
+    {
+      "keyID" : "release-b",
+      "signature" : "wwi5W4LBx4nj2acuKbgxBXT22tmVaZ1UyRxrE2XY1ZA2/QrJqnkgNkaMraAX1+YIKHrS/kfKZocdpi0s/XwjCA=="
+    },
+    {
+      "keyID" : "release-c",
+      "signature" : "Ag5/cxrYpbeouLeuxrlF1Mugf+DgY9hPeR9KabXuopoq2+U4N3nx+DVSFMQy2uObiuuVI5b62hx9e7M2Z2X4Bw=="
+    }
+  ]
+}

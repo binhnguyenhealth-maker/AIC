@@ -44,7 +44,10 @@ final class LocalOperationNetworkPrivacyTests: XCTestCase {
         defer { URLProtocol.unregisterClass(GlobalRecordingURLProtocol.self) }
 
         let packURL = try XCTUnwrap(Bundle.main.url(forResource: "chicago_beta", withExtension: "sqlite"))
-        let engine = LocalScanEngine(packURL: packURL)
+        let engine = LocalScanEngine(
+            packURL: packURL,
+            statusAuthorizer: TestPackStatusAuthorizer()
+        )
         var eligibleCoordinate: ScanCoordinate?
         var currentResultCandidate: ChicagoScanResult?
         for coordinate in try neighborhoodCentroids(in: packURL) {
@@ -103,6 +106,10 @@ final class LocalOperationNetworkPrivacyTests: XCTestCase {
         }
         return coordinates
     }
+}
+
+private struct TestPackStatusAuthorizer: PackStatusAuthorizing {
+    func authorize(packAt _: URL, refresh _: Bool) async throws {}
 }
 
 private final class GlobalRecordingURLProtocol: URLProtocol {

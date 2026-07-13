@@ -8,6 +8,8 @@
 	<string>$(AIC_API_BASE_URL)</string>
 	<key>AIC_METHODOLOGY_URL</key>
 	<string>$(AIC_METHODOLOGY_URL)</string>
+	<key>AIC_PACK_STATUS_URL</key>
+	<string>$(AIC_PACK_STATUS_URL)</string>
 	<key>AIC_PRIVACY_URL</key>
 	<string>$(AIC_PRIVACY_URL)</string>
 	<key>AIC_SUPPORT_URL</key>

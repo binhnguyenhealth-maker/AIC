@@ -2,7 +2,7 @@
   "cross_language_parity": {
     "filename": "chicago_beta.parity.json",
     "fixture_count": 3,
-    "sha256": "ae43e6b645bbed637c19a07a2e5db67a2a7259196e4ff7479b3debc4837de97e"
+    "sha256": "2828c687a7a6fe698ac6e5b89c412d84b55a0c3b79115552335342bdbc3aa161"
   },
   "disclosure_validation": {
     "aggregate_domain": {
@@ -19,31 +19,31 @@
     "low_count_profile": {
       "assault_battery": {
         "positive_released_cells": 4953,
-        "singleton_cells": 1049,
-        "three_to_four_incident_cells": 1099,
+        "singleton_cells": 1050,
+        "three_to_four_incident_cells": 1098,
         "two_incident_cells": 738,
-        "zero_cells": 16890
+        "zero_cells": 16889
       },
       "motor_vehicle_theft": {
-        "positive_released_cells": 2584,
-        "singleton_cells": 1754,
+        "positive_released_cells": 2585,
+        "singleton_cells": 1753,
         "three_to_four_incident_cells": 1386,
-        "two_incident_cells": 1229,
-        "zero_cells": 18063
+        "two_incident_cells": 1230,
+        "zero_cells": 18062
       },
       "robbery": {
         "positive_released_cells": 547,
-        "singleton_cells": 1430,
+        "singleton_cells": 1428,
         "three_to_four_incident_cells": 364,
-        "two_incident_cells": 507,
-        "zero_cells": 21146
+        "two_incident_cells": 508,
+        "zero_cells": 21147
       },
       "theft": {
         "positive_released_cells": 4344,
         "singleton_cells": 1247,
-        "three_to_four_incident_cells": 1448,
-        "two_incident_cells": 968,
-        "zero_cells": 17071
+        "three_to_four_incident_cells": 1447,
+        "two_incident_cells": 970,
+        "zero_cells": 17069
       }
     },
     "outside_city_by_category": {
@@ -60,7 +60,7 @@
       "theft": 3
     },
     "subcell_position_used_in_release": false,
-    "usable_source_rows": 138649,
+    "usable_source_rows": 138719,
     "zero_band_true_range": "0-2 incidents per category and cell"
   },
   "display": {
@@ -198,10 +198,10 @@
   },
   "pack": {
     "compressed_filename": "chicago_beta.sqlite.gz",
-    "compressed_sha256": "fcd61f4dd3785ee8204d5c16c3d6731accb3af3a38dd5642ab80cf6441b13206",
-    "compressed_size_bytes": 1589331,
+    "compressed_sha256": "03efdd8cfa7bbf025129f296a3e41a1fab925a77445ef05844ffc7c506877bc7",
+    "compressed_size_bytes": 1589290,
     "filename": "chicago_beta.sqlite",
-    "sha256": "821130a16d616c808c795844623c9a134120719685b4ae59303394bcfe8d01e7",
+    "sha256": "1a18629fa3429eefec10d0d025c80102ce7c48a63457e601c1c404001686ca32",
     "size_bytes": 4530176
   },
   "period": {
@@ -244,21 +244,21 @@
   },
   "row_counts": {
     "aggregate_cells": 23630,
-    "aggregate_cells_with_any_positive_band": 5807,
-    "all_geocoded_source_rows_in_period": 232951,
-    "all_source_rows_in_period": 233051,
+    "aggregate_cells_with_any_positive_band": 5808,
+    "all_geocoded_source_rows_in_period": 233091,
+    "all_source_rows_in_period": 233151,
     "community_areas": 77,
     "eligible_reference_locations": 2003,
     "evaluation_nodes_not_shipped": 50049,
     "outside_official_boundary_coordinates_excluded": 433,
-    "reference_distribution_buckets": 530,
-    "selected_geocoded_rows": 139082,
+    "reference_distribution_buckets": 531,
+    "selected_geocoded_rows": 139152,
     "selected_iucr_rows_unmapped": 0,
-    "selected_missing_coordinates_excluded": 49,
-    "selected_source_rows": 139131,
+    "selected_missing_coordinates_excluded": 24,
+    "selected_source_rows": 139176,
     "shipped_incident_rows": 0,
-    "temporary_source_incidents_used_to_aggregate": 138649,
-    "unsupported_categories_excluded": 93920
+    "temporary_source_incidents_used_to_aggregate": 138719,
+    "unsupported_categories_excluded": 93975
   },
   "schema_version": 3,
   "sources": {
@@ -267,7 +267,7 @@
       "official_url": "https://data.cityofchicago.org/d/igwz-8jzy",
       "query": "$select=area_numbe,community,the_geom&$order=area_numbe&$limit=100",
       "resource_url": "https://data.cityofchicago.org/resource/igwz-8jzy.json",
-      "retrieved_at": "2026-07-11T02:40:53Z",
+      "retrieved_at": "2026-07-13T02:31:23Z",
       "snapshot_sha256": "3fd4cb3c936c0d3d61dce9b336579e19cce83f4a927703758f2cdbbb905d27b2",
       "source_rows_updated_at_epoch": 1745363197
     },
@@ -276,16 +276,16 @@
       "official_url": "https://data.cityofchicago.org/d/ijzp-q8t2",
       "query": "$select=id,date,iucr,primary_type,latitude,longitude&$where=date >= '2025-07-01T00:00:00' AND date < '2026-07-01T00:00:00' AND iucr IN ('0312','0313','031A','031B','0320','0325','0326','0330','0331','0334','0337','033A','033B','0340','041A','041B','0420','0430','0440','0450','0451','0452','0453','0454','0460','0461','0462','0475','0479','0480','0481','0482','0483','0484','0485','0486','0487','0488','0489','0495','0496','0497','0498','0499','051A','051B','0520','0530','0545','0550','0551','0552','0553','0554','0555','0556','0557','0558','0560','0710','0810','0820','0830','0840','0841','0842','0843','0850','0860','0865','0870','0880','0890','0895','0910','0915','0917','0918','0920','0925','0927','0928','0930','0935','0937','0938') AND latitude IS NOT NULL AND longitude IS NOT NULL&$order=id",
       "resource_url": "https://data.cityofchicago.org/resource/ijzp-q8t2.json",
-      "retrieved_at": "2026-07-11T02:40:53Z",
-      "snapshot_sha256": "af7129d415b2cf5e8e6699626fe8739524cda22847b630bb4acd2b13d71df302",
-      "source_rows_updated_at_epoch": 1783682296
+      "retrieved_at": "2026-07-13T02:31:23Z",
+      "snapshot_sha256": "8ec77486f5f0065d5aa8535a357334be53285c7ed98c3fe9f035555295d66474",
+      "source_rows_updated_at_epoch": 1783856748
     },
     "iucr_codes": {
       "dataset_id": "c7ck-438e",
       "official_url": "https://data.cityofchicago.org/d/c7ck-438e",
       "query": "$select=iucr,primary_description,secondary_description,index_code,active&$where=primary_description IN ('ASSAULT','BATTERY','MOTOR VEHICLE THEFT','ROBBERY','THEFT')&$order=primary_description,iucr&$limit=5000",
       "resource_url": "https://data.cityofchicago.org/resource/c7ck-438e.json",
-      "retrieved_at": "2026-07-11T02:40:53Z",
+      "retrieved_at": "2026-07-13T02:31:23Z",
       "snapshot_sha256": "577eb40ee8f3a56d9f63c6a41965e581a4b3c3044bb3a95fa357b177806b8bb2",
       "source_rows_updated_at_epoch": 1780434514
     }
@@ -293,21 +293,21 @@
   "utility_validation": {
     "benchmark": "All eligible 100 m evaluation nodes; exact source points and exact node counts exist only in build memory and are not shipped.",
     "cooked_score_absolute_error": {
-      "exact_fraction": 0.5158344822074367,
+      "exact_fraction": 0.5157545605306799,
       "max": 55.0,
-      "mean": 3.0029571020400008,
-      "over_10_fraction": 0.020280125477032507,
+      "mean": 3.004655437671082,
+      "over_10_fraction": 0.020260145057843314,
       "p50": 0.0,
       "p90": 5.0,
       "p95": 10.0,
       "p99": 15.0,
-      "within_10_fraction": 0.9797198745229675,
-      "within_5_fraction": 0.9205578533037623
+      "within_10_fraction": 0.9797398549421567,
+      "within_5_fraction": 0.920218186177546
     },
-    "dominant_category_agreement": 0.9153829247337609,
+    "dominant_category_agreement": 0.9151031988651122,
     "estimated_count_absolute_error": {
       "max": 822.0,
-      "mean": 18.32564087194549,
+      "mean": 18.33241423405063,
       "p50": 13.0,
       "p90": 38.0,
       "p95": 54.0,
@@ -317,7 +317,7 @@
     "movement_score_absolute_error": {
       "10m": {
         "max": 5.0,
-        "mean": 0.2825,
+        "mean": 0.27,
         "over_10_fraction": 0.0,
         "p50": 0.0,
         "p90": 0.0,
@@ -327,7 +327,7 @@
       },
       "25m": {
         "max": 5.0,
-        "mean": 0.6275,
+        "mean": 0.6175,
         "over_10_fraction": 0.0,
         "p50": 0.0,
         "p90": 5.0,
@@ -337,7 +337,7 @@
       },
       "50m": {
         "max": 15.0,
-        "mean": 1.215,
+        "mean": 1.2125,
         "over_10_fraction": 0.0005,
         "p50": 0.0,
         "p90": 5.0,

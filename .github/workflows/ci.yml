@@ -79,6 +79,12 @@ jobs:
         run: swift build --package-path ios
       - name: Test Swift core
         run: swift test --package-path ios
+      - name: Verify signed emergency pack status
+        run: |
+          swift run --package-path ios AICPackStatusValidation \
+            ios/AIC/Resources/chicago_beta.sqlite \
+            ios/AIC/Resources/pack_status_bootstrap.json \
+            operations/pack-status/public/v1/status.json
       - name: Select an available iPhone Simulator
         id: simulator
         run: |

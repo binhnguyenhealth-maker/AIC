@@ -7,7 +7,8 @@ let package = Package(
     platforms: [.macOS(.v13), .iOS(.v17)],
     products: [
         .library(name: "AICCore", targets: ["AICCore"]),
-        .executable(name: "AICCoreValidation", targets: ["AICCoreValidation"])
+        .executable(name: "AICCoreValidation", targets: ["AICCoreValidation"]),
+        .executable(name: "AICPackStatusValidation", targets: ["AICPackStatusValidation"])
     ],
     targets: [
         .target(
@@ -25,6 +26,11 @@ let package = Package(
             dependencies: ["AICCore"],
             path: "Validation",
             linkerSettings: [.linkedLibrary("sqlite3")]
+        ),
+        .executableTarget(
+            name: "AICPackStatusValidation",
+            dependencies: ["AICCore"],
+            path: "StatusValidation"
         )
     ]
 )

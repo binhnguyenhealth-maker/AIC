@@ -47,7 +47,7 @@ enum ShowcaseData {
     static let freshness = PackFreshnessSummary(
         sourceThroughDate: "2026-06-30",
         periodStart: "2025-07-01",
-        sourceRetrievedAt: Date(timeIntervalSince1970: 1_783_737_653),
+        sourceRetrievedAt: Date(timeIntervalSince1970: 1_783_909_883),
         freshUntilDate: "2026-08-07",
         expiresAtDate: "2026-08-29",
         state: .withinUpdateWindow,

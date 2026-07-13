@@ -55,7 +55,7 @@ final class PrivacyConfigurationTests: XCTestCase {
     }
 
     func testUSAndMetricRadiusLabelsDescribeTheSameFixedCalculation() {
-        XCTAssertEqual(AICDistanceSystem.us.compactRadius, "0.3 MI")
+        XCTAssertEqual(AICDistanceSystem.us.compactRadius, "≈0.31 MI")
         XCTAssertEqual(AICDistanceSystem.us.radiusDescription, "about 0.3 mi (1,640 ft)")
         XCTAssertEqual(AICDistanceSystem.metric.compactRadius, "500 M")
         XCTAssertEqual(AICDistanceSystem.metric.radiusDescription, "500 m")
