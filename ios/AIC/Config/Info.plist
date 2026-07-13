@@ -35,7 +35,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter circle. Your location is not uploaded or saved.</string>
+	<string>AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter (about 0.3-mile) radius. Your location is not uploaded or saved.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

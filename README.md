@@ -13,19 +13,20 @@ not a live safety assessment or a prediction of personal risk.
 
 ## Product tour
 
-<p align="center">
-  <img src="docs/showcase/sign-in.jpg" alt="AIC sign-in screen explaining local scoring and privacy" width="320">
-  &nbsp;&nbsp;
-  <img src="docs/showcase/local-scan.jpg" alt="AIC home screen ready to calculate a local Chicago Cooked Score" width="320">
-</p>
+The Home screen states the product boundary before the first scan. The primary
+flow works without an account, makes both location choices explicit, and confirms
+that the Chicago data pack and scoring operation remain on-device. Sign in with
+Apple is optional in Settings for account and public-username features.
 
-The onboarding states the product boundary before account creation. After sign-in,
-the primary flow makes both location choices explicit while confirming that the
-Chicago data pack and scoring operation remain on-device.
+<p align="center">
+  <img src="distribution/app-store/screenshots/en-US/01-home-iphone-17-pro-max.png" alt="AIC home screen with a local 0.3-mile historical-data scan" width="31%">
+  <img src="distribution/app-store/screenshots/en-US/02-cooked-score-iphone-17-pro-max.png" alt="AIC Cooked Score result with historical-data limitations" width="31%">
+  <img src="distribution/app-store/screenshots/en-US/03-cooked-receipt-iphone-17-pro-max.png" alt="AIC privacy-coarsened Cooked Receipt" width="31%">
+</p>
 
 ## What I built
 
-- A SwiftUI iOS client with Sign in with Apple, username onboarding, local
+- A SwiftUI iOS client with optional Sign in with Apple, username onboarding, local
   location/manual-pin scanning, results, receipts, settings, logout, and
   account deletion.
 - A deterministic Python pipeline that transforms official Chicago data into a
@@ -72,8 +73,8 @@ endpoint.
 - Sessions are stored in the iOS Keychain using
   `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`.
 
-The complete scoring and disclosure methodology is documented in
-[`docs/methodology/BETA_SCORE.md`](docs/methodology/BETA_SCORE.md).
+The complete scoring and disclosure method is documented in the
+[Chicago schema-v3 methodology](docs/methodology/BETA_SCORE.md).
 
 ## Security design
 
@@ -139,7 +140,7 @@ used.
 
 ## Status
 
-The repository represents a Chicago beta and engineering portfolio project. It
-is not currently presented as a live public-safety service.
+The repository represents a Chicago-first App Store release candidate and
+engineering portfolio project. It is not a live public-safety service.
 
 Licensed under the [MIT License](LICENSE).

@@ -18,7 +18,7 @@ final class LocationService: NSObject, ObservableObject, @preconcurrency CLLocat
     private var manager: CLLocationManager?
 
     func requestCurrentLocation() {
-        // CLLocationManager is intentionally created only after the user taps Scan Me.
+        // CLLocationManager is intentionally created only after the user taps Scan My Area.
         let manager = manager ?? CLLocationManager()
         self.manager = manager
         manager.delegate = self
@@ -62,7 +62,7 @@ final class LocationService: NSObject, ObservableObject, @preconcurrency CLLocat
             return
         }
         guard location.horizontalAccuracy >= 0, location.horizontalAccuracy <= 250 else {
-            state = .failed("Location accuracy is too low for a 500 m scan. Use the manual Chicago picker.")
+            state = .failed("Location accuracy is too low for this scan radius. Use the manual Chicago picker.")
             return
         }
         guard abs(location.timestamp.timeIntervalSinceNow) <= 60 else {

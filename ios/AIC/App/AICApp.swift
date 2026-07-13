@@ -29,7 +29,7 @@ private struct RootView: View {
             case .needsUsername:
                 UsernameScreen(model: model)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
-            case .ready:
+            case .guest, .ready:
                 readyView
                     .transition(.opacity)
             }
@@ -50,9 +50,18 @@ private struct RootView: View {
 #if DEBUG
         switch ShowcaseData.requestedScreen {
         case .result:
-            NavigationStack { ResultScreen(result: ShowcaseData.result) {} }
+            NavigationStack {
+                ResultScreen(
+                    result: ShowcaseData.result,
+                    distanceSystem: model.distanceSystem
+                ) {}
+            }
         case .receipt:
             NavigationStack { ReceiptScreen(result: ShowcaseData.result, username: model.username) }
+        case .settings:
+            SettingsScreen(model: model)
+        case .passport:
+            DataPassportView(summary: ShowcaseData.freshness)
         default:
             MainFlowView(model: model)
         }

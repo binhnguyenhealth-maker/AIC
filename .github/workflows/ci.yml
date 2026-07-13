@@ -110,6 +110,7 @@ jobs:
             echo "pack_bytes=$(stat -f '%z' "$pack_path")"
             echo "pack_sha256=$(shasum -a 256 "$pack_path" | awk '{print $1}')"
             echo "bundle_identifier=$(plutil -extract CFBundleIdentifier raw "$app_path/Info.plist")"
+            echo "marketing_version=$(plutil -extract CFBundleShortVersionString raw "$app_path/Info.plist")"
             echo "bundle_version=$(plutil -extract CFBundleVersion raw "$app_path/Info.plist")"
             echo "privacy_manifest_count=$(find "$app_path" -name PrivacyInfo.xcprivacy | wc -l | tr -d ' ')"
           } > "$RUNNER_TEMP/aic-app-bundle-evidence.txt"
@@ -121,7 +122,7 @@ jobs:
               --path "$RUNNER_TEMP/AIC.xcresult" \
               --output-path "$RUNNER_TEMP/aic-xctest-attachments"
           fi
-      - name: Launch and capture the real onboarding screen
+      - name: Launch and capture the clean guest home screen
         if: success()
         run: |
           app_path="$(find "$RUNNER_TEMP/AICDerivedData/Build/Products" -path '*Debug-iphonesimulator/AIC.app' -print -quit)"
@@ -131,7 +132,7 @@ jobs:
           xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$app_path"
           xcrun simctl launch "${{ steps.simulator.outputs.udid }}" "$bundle_identifier"
           sleep 3
-          xcrun simctl io "${{ steps.simulator.outputs.udid }}" screenshot "$RUNNER_TEMP/aic-onboarding.png"
+          xcrun simctl io "${{ steps.simulator.outputs.udid }}" screenshot "$RUNNER_TEMP/aic-clean-launch.png"
       - name: Upload Xcode evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -140,6 +141,6 @@ jobs:
           path: |
             ${{ runner.temp }}/aic-xcodebuild.log
             ${{ runner.temp }}/aic-app-bundle-evidence.txt
-            ${{ runner.temp }}/aic-onboarding.png
+            ${{ runner.temp }}/aic-clean-launch.png
             ${{ runner.temp }}/aic-xctest-attachments/
           if-no-files-found: warn

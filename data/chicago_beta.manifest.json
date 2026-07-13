@@ -64,9 +64,9 @@
     "zero_band_true_range": "0-2 incidents per category and cell"
   },
   "display": {
-    "disclaimer": "Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.",
+    "disclaimer": "Cooked Score is a historical data index that compares reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.",
     "methodology_name": "Reported Incident Exposure Index",
-    "product_name": "Cooked Score Beta",
+    "product_name": "Cooked Score",
     "source_limitation": "Chicago Police Department data reflects reported incidents, is preliminary, may be revised, may contain errors or omissions, and does not capture unreported incidents. Source-map locations are approximate."
   },
   "estimator": {
@@ -101,7 +101,7 @@
   "iucr_mapping": {
     "frozen_code_count": 86,
     "frozen_file": "pipeline/iucr_mapping.json",
-    "frozen_file_sha256": "3b7b0b6f8ffca3bdb33e09dae149b099b748e2252a22755330834bea32018072",
+    "frozen_file_sha256": "a340d5433f43489720609793b332466a8a16b2587052aafb2f34843360ae0f02",
     "mutual_exclusivity_verified": true,
     "observed_code_count": 76,
     "observed_codes": [
@@ -198,14 +198,16 @@
   },
   "pack": {
     "compressed_filename": "chicago_beta.sqlite.gz",
-    "compressed_sha256": "5a5d575c03fa83e477989735bc0cff9fa780d0e4a7d627c99c0e90642eff0bd0",
-    "compressed_size_bytes": 1589300,
+    "compressed_sha256": "fcd61f4dd3785ee8204d5c16c3d6731accb3af3a38dd5642ab80cf6441b13206",
+    "compressed_size_bytes": 1589331,
     "filename": "chicago_beta.sqlite",
-    "sha256": "7b1b0e688eb8bbc07e59dad35988fe1c6d8326e0536d215785a995c04142f0b4",
+    "sha256": "821130a16d616c808c795844623c9a134120719685b4ae59303394bcfe8d01e7",
     "size_bytes": 4530176
   },
   "period": {
     "end_exclusive": "2026-07-01",
+    "expires_at_date": "2026-08-29",
+    "fresh_until_date": "2026-08-07",
     "months": 12,
     "source_through_date": "2026-06-30",
     "start": "2025-07-01"

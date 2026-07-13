@@ -5,12 +5,14 @@ struct HomeScreen: View {
     @ObservedObject var model: AppModel
     let onResult: (ChicagoScanResult) -> Void
 
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var locationService = LocationService()
     @State private var packSummary: PackSummary?
     @State private var packError: String?
     @State private var isScanning = false
     @State private var showManualPicker = false
     @State private var showSettings = false
+    @State private var selectedPassport: DataPassportSelection?
     @State private var completedScans = 0
 
     private let scanEngine = LocalScanEngine()
@@ -24,7 +26,6 @@ struct HomeScreen: View {
                     scorePrompt
                     privacyStrip
                     manualReason
-                    packCard
                 }
                 .aicPagePadding()
                 .padding(.top, 12)
@@ -36,7 +37,7 @@ struct HomeScreen: View {
                 Button { showSettings = true } label: {
                     Image(systemName: "person.crop.circle")
                         .font(.title2)
-                        .accessibilityLabel("Account settings")
+                        .accessibilityLabel(model.isSignedIn ? "Account settings" : "Settings")
                 }
             }
         }
@@ -50,7 +51,14 @@ struct HomeScreen: View {
         .sheet(isPresented: $showSettings) {
             SettingsScreen(model: model)
         }
-        .task { await loadPackSummary() }
+        .sheet(item: $selectedPassport) { selection in
+            DataPassportView(summary: selection.summary)
+                .presentationDetents([.large])
+        }
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            await loadPackSummary()
+        }
         .onChange(of: locationService.state) { _, state in
             guard case let .located(coordinate) = state else { return }
             locationService.reset()
@@ -62,7 +70,7 @@ struct HomeScreen: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("CHICAGO  ·  500 M  ·  ON-DEVICE")
+            Text("CHICAGO  ·  \(model.distanceSystem.compactRadius)  ·  ON-DEVICE")
                 .font(.caption.weight(.heavy))
                 .tracking(1.7)
                 .foregroundStyle(AICTheme.mint)
@@ -79,17 +87,19 @@ struct HomeScreen: View {
     private var scorePrompt: some View {
         AICCard {
             VStack(alignment: .leading, spacing: 16) {
-                RadarScanView(state: radarState)
+                RadarScanView(state: radarState, distanceSystem: model.distanceSystem)
                     .frame(maxWidth: .infinity)
 
                 VStack(alignment: .leading, spacing: 7) {
-                    Text(radarState == .idle ? "Scan the 500 m around you" : radarStatusTitle)
+                    Text(radarState == .idle ? model.distanceSystem.radiusTitle : radarStatusTitle)
                         .font(.title2.weight(.black))
                         .contentTransition(.numericText())
                     Text("Check nearby reported incidents using the Chicago data pack stored on your iPhone.")
                         .font(.subheadline)
                         .foregroundStyle(AICTheme.secondaryText)
                 }
+
+                dataHorizon
 
                 Button {
                     locationService.requestCurrentLocation()
@@ -100,13 +110,15 @@ struct HomeScreen: View {
                                 ProgressView().tint(AICTheme.ink)
                                 Text(isScanning ? "Scanning the area…" : "Finding your area…")
                             }
+                        } else if packSummary?.state == .blocked {
+                            Label("Scans Paused", systemImage: "pause.circle.fill")
                         } else {
                             Label("Scan My Area", systemImage: "scope")
                         }
                     }
                 }
                 .buttonStyle(PrimaryActionStyle())
-                .disabled(isScanning || isRequestingLocation || packSummary == nil)
+                .disabled(isScanning || isRequestingLocation || !isPackUsable)
 
                 Button {
                     showManualPicker = true
@@ -117,7 +129,7 @@ struct HomeScreen: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.white)
-                .disabled(isScanning || packSummary == nil)
+                .disabled(isScanning || !isPackUsable)
                 .accessibilityHint("Opens the offline Chicago position picker without requesting location permission.")
             }
         }
@@ -164,30 +176,29 @@ struct HomeScreen: View {
         .buttonStyle(.plain)
     }
 
-    private var packCard: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack {
-                Label("Chicago data pack", systemImage: packSummary == nil ? "externaldrive.badge.xmark" : "externaldrive.fill.badge.checkmark")
-                    .font(.subheadline.weight(.bold))
-                Spacer()
-                Text("LOCAL")
-                    .font(.caption2.weight(.black))
-                    .foregroundStyle(AICTheme.mint)
+    @ViewBuilder
+    private var dataHorizon: some View {
+        if let packSummary {
+            DataHorizonView(summary: packSummary) {
+                selectedPassport = DataPassportSelection(summary: packSummary)
             }
-            if let packSummary {
-                Text("Historical period starts \(packSummary.periodStart) · Source through \(packSummary.sourceThroughDate)")
-                    .font(.caption)
-                    .foregroundStyle(AICTheme.secondaryText)
-            } else if let packError {
-                Text(packError)
-                    .font(.caption)
-                    .foregroundStyle(AICTheme.coral)
-            } else {
-                ProgressView("Checking pack…")
-                    .font(.caption)
+        } else if let packError {
+            DataHorizonErrorView(message: packError)
+        } else {
+            HStack(spacing: 10) {
+                ProgressView().tint(AICTheme.lavender)
+                Text("Checking data horizon…")
+                    .font(.caption.weight(.bold))
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
+            .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
-        .padding(.top, 4)
+    }
+
+    private var isPackUsable: Bool {
+        guard let packSummary else { return false }
+        return packSummary.state != .blocked
     }
 
     private var isRequestingLocation: Bool {
@@ -205,7 +216,7 @@ struct HomeScreen: View {
 
     private var radarStatusTitle: String {
         switch radarState {
-        case .idle: "Scan the 500 m around you"
+        case .idle: model.distanceSystem.radiusTitle
         case .locating: "Locking onto your area"
         case .scanning: "Scanning reported history"
         }
@@ -222,7 +233,7 @@ struct HomeScreen: View {
     }
 
     private func scan(_ coordinate: ScanCoordinate) {
-        guard !isScanning else { return }
+        guard !isScanning, isPackUsable else { return }
         isScanning = true
         Task {
             defer { isScanning = false }
@@ -234,6 +245,9 @@ struct HomeScreen: View {
                 completedScans += 1
                 onResult(scanResult)
             } catch {
+                if error as? ChicagoPackError == .packUpdateRequired {
+                    await loadPackSummary()
+                }
                 model.present(error.localizedDescription)
             }
         }

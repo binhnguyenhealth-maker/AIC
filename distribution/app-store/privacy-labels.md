@@ -1,6 +1,6 @@
-# App Privacy answers for beta
+# App Privacy answers
 
-These answers describe AIC's own app and minimal account service. Apple and TestFlight may independently collect diagnostics under Apple's policies.
+These answers describe AIC's own app and minimal account service. Apple may independently collect diagnostics under Apple's policies.
 
 ## Tracking
 
@@ -11,12 +11,12 @@ These answers describe AIC's own app and minimal account service. Apple and Test
 
 | App Store category | Collected | Linked | Purpose | Notes |
 | --- | --- | --- | --- | --- |
-| User ID | Yes | Yes | App functionality | Sign in with Apple subject mapped to an internal account ID |
-| Other User Content | Yes | Yes | App functionality | User-chosen public username |
+| User ID | Yes | Yes | App functionality | Only when the user opts into an account; keyed hash of the Sign in with Apple subject mapped to an internal account ID |
+| Other User Content | Yes | Yes | App functionality | Optional user-chosen public username for signed-in accounts |
 | Precise Location | No | No | — | Used only on-device for the immediate scan |
 | Coarse Location | No | No | — | Neighborhood is derived on-device and not stored by the account service |
-| Email Address | No | No | — | Beta should not retain Apple relay email even if Apple supplies it |
-| Diagnostics | No | No | — | No third-party analytics or crash SDK in the beta |
+| Email Address | No | No | — | AIC does not retain Apple relay email even if Apple supplies it |
+| Diagnostics | No | No | — | No third-party analytics or crash SDK in the app |
 | Purchases | No | No | — | Payments are deferred |
 
 Re-check these answers against the final binary and service schema immediately before submission. Any analytics, crash reporter, email retention, or server-side receipt feature changes the answers.

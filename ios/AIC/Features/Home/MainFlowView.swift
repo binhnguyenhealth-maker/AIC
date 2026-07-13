@@ -31,7 +31,10 @@ struct MainFlowView: View {
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case let .result(scan):
-                    ResultScreen(result: scan.result) { path.append(.receipt(scan)) }
+                    ResultScreen(
+                        result: scan.result,
+                        distanceSystem: model.distanceSystem
+                    ) { path.append(.receipt(scan)) }
                 case let .receipt(scan):
                     ReceiptScreen(result: scan.result, username: model.username)
                 }

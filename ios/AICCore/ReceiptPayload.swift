@@ -61,6 +61,7 @@ public enum ReceiptComposer {
         date: Date = Date(),
         calendar: Calendar = .current
     ) -> CookedReceiptPayload {
+        let normalizedUsername = UsernamePolicy.normalize(username)
         let label: String?
         switch locationMode {
         case .neighborhood:
@@ -72,7 +73,7 @@ public enum ReceiptComposer {
         }
 
         return CookedReceiptPayload(
-            username: showUsername ? UsernamePolicy.normalize(username) : nil,
+            username: showUsername && !normalizedUsername.isEmpty ? normalizedUsername : nil,
             locationMode: locationMode,
             locationLabel: label,
             broadTimeBucket: broadTimeBucket(for: date, calendar: calendar),

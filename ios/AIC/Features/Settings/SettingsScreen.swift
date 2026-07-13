@@ -12,9 +12,33 @@ struct SettingsScreen: View {
             ZStack {
                 AICBackground()
                 List {
-                    Section("Public account") {
-                        LabeledContent("Username", value: "@\(model.username)")
-                        Text("Your username is public when included on a Cooked Receipt. Ordinary scan points are not stored in this account.")
+                    if model.isSignedIn {
+                        Section("Public account") {
+                            LabeledContent("Username", value: "@\(model.username)")
+                            Text("Your username is public when included on a Cooked Receipt. Ordinary scan points are not stored in this account.")
+                                .font(.caption)
+                                .foregroundStyle(AICTheme.secondaryText)
+                        }
+                    } else {
+                        Section("Private on-device mode") {
+                            Label("No account", systemImage: "iphone.and.arrow.forward")
+                            Text("Scanning and reports work without an account. Sign in only if you want a public @username on receipts.")
+                                .font(.caption)
+                                .foregroundStyle(AICTheme.secondaryText)
+                            Button("Sign in with Apple") {
+                                model.startSignIn()
+                                dismiss()
+                            }
+                        }
+                    }
+
+                    Section("Display") {
+                        Picker("Distance units", selection: $model.measurementPreference) {
+                            ForEach(AICMeasurementPreference.allCases) { preference in
+                                Text(preference.displayName).tag(preference)
+                            }
+                        }
+                        Text("AIC always calculates the same exact 500-metre radius. This setting only changes how that distance is displayed. Automatic follows your iPhone measurement system.")
                             .font(.caption)
                             .foregroundStyle(AICTheme.secondaryText)
                     }
@@ -51,27 +75,29 @@ struct SettingsScreen: View {
                             .foregroundStyle(AICTheme.secondaryText)
                     }
 
-                    Section {
-                        Button("Log out", role: .destructive) {
-                            Task { await model.logout(); dismiss() }
+                    if model.isSignedIn {
+                        Section {
+                            Button("Log out", role: .destructive) {
+                                Task { await model.logout(); dismiss() }
+                            }
+                            .disabled(model.isBusy)
+                        } footer: {
+                            Text("Logout revokes the active AIC session and removes credentials from this iPhone.")
                         }
-                        .disabled(model.isBusy)
-                    } footer: {
-                        Text("Logout revokes the active AIC session and removes credentials from this iPhone.")
-                    }
 
-                    Section {
-                        Button("Delete account", role: .destructive) {
-                            showDeletionFlow = true
+                        Section {
+                            Button("Delete account", role: .destructive) {
+                                showDeletionFlow = true
+                            }
+                            .disabled(model.isBusy)
+                        } footer: {
+                            Text("Deletion disables the account, revokes Apple and AIC credentials, removes the username and user-controlled account data, and clears local credentials and temporary receipts. The public Chicago data pack contains no account data and may remain.")
                         }
-                        .disabled(model.isBusy)
-                    } footer: {
-                        Text("Deletion disables the account, revokes Apple and AIC credentials, removes the username and user-controlled account data, and clears local credentials and temporary receipts. The public Chicago data pack contains no account data and may remain.")
                     }
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Account")
+            .navigationTitle(model.isSignedIn ? "Account" : "Settings")
             .toolbar { Button("Done") { dismiss() } }
             .sheet(isPresented: $showDeletionFlow) {
                 DeleteAccountSheet(model: model) {

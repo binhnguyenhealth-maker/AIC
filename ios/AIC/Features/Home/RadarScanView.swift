@@ -8,6 +8,7 @@ struct RadarScanView: View {
     }
 
     let state: State
+    let distanceSystem: AICDistanceSystem
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -122,7 +123,7 @@ struct RadarScanView: View {
 
     private var centerLabel: String {
         switch state {
-        case .idle: "500 M"
+        case .idle: distanceSystem.compactRadius
         case .locating: "CENTER"
         case .scanning: "SCAN"
         }
@@ -131,13 +132,13 @@ struct RadarScanView: View {
     private var accessibilityLabel: String {
         switch state {
         case .idle: "Historical incident radar ready"
-        case .locating: "Centering the 500 meter scan"
+        case .locating: "Centering the \(distanceSystem.accessibilityRadius) scan"
         case .scanning: "Comparing local historical incident data"
         }
     }
 
     private var accessibilityValue: String {
-        "Chicago, fixed 500 meter circle, processed on this iPhone"
+        "Chicago, fixed \(distanceSystem.accessibilityRadius) radius, processed on this iPhone"
     }
 }
 
@@ -161,7 +162,7 @@ private struct RadarWedge: Shape {
 #Preview("Ready") {
     ZStack {
         AICBackground()
-        RadarScanView(state: .idle)
+        RadarScanView(state: .idle, distanceSystem: .us)
             .padding(40)
     }
     .preferredColorScheme(.dark)
@@ -170,7 +171,7 @@ private struct RadarWedge: Shape {
 #Preview("Scanning") {
     ZStack {
         AICBackground()
-        RadarScanView(state: .scanning)
+        RadarScanView(state: .scanning, distanceSystem: .metric)
             .padding(40)
     }
     .preferredColorScheme(.dark)

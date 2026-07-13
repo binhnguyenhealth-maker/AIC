@@ -42,6 +42,20 @@ Use `--period-end YYYY-MM-01` to pin the exclusive period end. Network responses
 are cached under `pipeline/.cache/` and are not shipped. Use `--refresh` to
 retrieve the same window again.
 
+## Pack freshness policy
+
+Every generated pack and manifest includes `source_through_date`,
+`fresh_until_date`, and `expires_at_date`. Because this pack uses complete
+calendar months, the dates are deterministic: `fresh_until_date` is 38 days
+after the source-through date and `expires_at_date` is 60 days after it. The
+38-day window leaves one week after a typical month-end refresh; the 60-day
+limit prevents a missed refresh from becoming indefinitely stale guidance.
+The verifier rejects missing, malformed, or policy-drifted dates. The app
+refuses to open the pack or run a scan at 00:00 UTC on the fresh-until date or
+later and asks the user to update. `expires_at_date` remains the hard lifecycle
+limit for pack distribution and cleanup; it is never used to extend scan access
+past `fresh_until_date`.
+
 ## Schema-v3 release transform
 
 Each eligible source event is assigned exactly once to one non-overlapping 250 m

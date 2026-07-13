@@ -12,7 +12,7 @@ settings:
     SWIFT_VERSION: "5.10"
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
     CODE_SIGN_STYLE: Automatic
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: ""
 
@@ -56,7 +56,7 @@ targets:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         ITSAppUsesNonExemptEncryption: false
-        NSLocationWhenInUseUsageDescription: "AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter circle. Your location is not uploaded or saved."
+        NSLocationWhenInUseUsageDescription: "AIC uses your location once, on this device, to estimate historical reported-incident concentration for a fixed 500-meter (about 0.3-mile) radius. Your location is not uploaded or saved."
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:

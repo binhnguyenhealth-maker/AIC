@@ -8,6 +8,8 @@ enum ShowcaseData {
         case home
         case result
         case receipt
+        case settings
+        case passport
     }
 
     static var requestedScreen: Screen? {
@@ -38,8 +40,19 @@ enum ShowcaseData {
         ],
         neighborhood: "Near West Side",
         sourceThroughDate: "2026-06-30",
-        periodStart: "2021-01-01",
-        methodologyVersion: "chicago-beta-v1"
+        periodStart: "2025-07-01",
+        methodologyVersion: "beta-cell250-q5-area-v3"
+    )
+
+    static let freshness = PackFreshnessSummary(
+        sourceThroughDate: "2026-06-30",
+        periodStart: "2025-07-01",
+        sourceRetrievedAt: Date(timeIntervalSince1970: 1_783_737_653),
+        freshUntilDate: "2026-08-07",
+        expiresAtDate: "2026-08-29",
+        state: .withinUpdateWindow,
+        daysSinceSourceThrough: 13,
+        daysUntilCutoff: 25
     )
 }
 #endif
@@ -54,6 +67,7 @@ struct AppleCredentialMaterial: Equatable {
 final class AppModel: ObservableObject {
     enum Phase: Equatable {
         case launching
+        case guest
         case signedOut
         case needsUsername
         case ready
@@ -62,18 +76,29 @@ final class AppModel: ObservableObject {
     @Published private(set) var phase: Phase = .launching
     @Published private(set) var session: AuthSession?
     @Published var usernameDraft = ""
+    @Published var measurementPreference: AICMeasurementPreference {
+        didSet {
+            userDefaults.set(measurementPreference.rawValue, forKey: Self.measurementPreferenceKey)
+        }
+    }
     @Published var isBusy = false
     @Published var presentedError: String?
 
     private let accountAPI: any AccountAPIProtocol
     private let sessionStore: any SessionStoring
+    private let userDefaults: UserDefaults
+    private static let measurementPreferenceKey = "aic.measurement-preference"
 
     init(
         accountAPI: any AccountAPIProtocol = AccountAPI(),
-        sessionStore: any SessionStoring = KeychainSessionStore()
+        sessionStore: any SessionStoring = KeychainSessionStore(),
+        userDefaults: UserDefaults = .standard
     ) {
         self.accountAPI = accountAPI
         self.sessionStore = sessionStore
+        self.userDefaults = userDefaults
+        measurementPreference = userDefaults.string(forKey: Self.measurementPreferenceKey)
+            .flatMap(AICMeasurementPreference.init(rawValue:)) ?? .automatic
 #if DEBUG
         if ShowcaseData.requestedScreen != nil {
             session = ShowcaseData.session
@@ -83,12 +108,14 @@ final class AppModel: ObservableObject {
     }
 
     var username: String { session?.username ?? "" }
+    var isSignedIn: Bool { session != nil }
+    var distanceSystem: AICDistanceSystem { measurementPreference.resolvedSystem() }
 
     func restoreSession() async {
         guard phase == .launching else { return }
         do {
             guard var restored = try sessionStore.load() else {
-                phase = .signedOut
+                phase = .guest
                 return
             }
             if restored.accessTokenExpiresAt <= Date().addingTimeInterval(60) {
@@ -105,8 +132,18 @@ final class AppModel: ObservableObject {
         } catch {
             try? sessionStore.delete()
             session = nil
-            phase = .signedOut
+            phase = .guest
         }
+    }
+
+    func continueWithoutAccount() {
+        session = nil
+        usernameDraft = ""
+        phase = .guest
+    }
+
+    func startSignIn() {
+        phase = .signedOut
     }
 
     func completeAppleAuthorization(_ authorization: ASAuthorization, rawNonce: String) async {
@@ -197,7 +234,7 @@ final class AppModel: ObservableObject {
         try? sessionStore.delete()
         self.session = nil
         usernameDraft = ""
-        phase = .signedOut
+        phase = .guest
         isBusy = false
     }
 
@@ -225,7 +262,7 @@ final class AppModel: ObservableObject {
             ReceiptArtifactStore.removeAllTemporaryReceipts()
             self.session = nil
             usernameDraft = ""
-            phase = .signedOut
+            phase = .guest
             return true
         } catch {
             presentedError = error.localizedDescription

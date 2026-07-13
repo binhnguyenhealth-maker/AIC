@@ -32,9 +32,9 @@ CRIME_SOURCE_URL = f"{SOCRATA_DOMAIN}/d/{CRIME_DATASET_ID}"
 BOUNDARY_SOURCE_URL = f"{SOCRATA_DOMAIN}/d/{BOUNDARY_DATASET_ID}"
 IUCR_SOURCE_URL = f"{SOCRATA_DOMAIN}/d/{IUCR_DATASET_ID}"
 DISCLAIMER = (
-    "Cooked Score Beta compares historical reported-incident concentration around "
-    "this location with eligible Chicago comparison locations. It is not a "
-    "live safety assessment or personal-risk prediction."
+    "Cooked Score is a historical data index that compares reported-incident "
+    "concentration around this location with eligible Chicago comparison locations. "
+    "It is not a live safety assessment or personal-risk prediction."
 )
 SOURCE_LIMITATION = (
     "Chicago Police Department data reflects reported incidents, is preliminary, "
@@ -56,6 +56,12 @@ CATEGORY_ORDER = (
 )
 ALLOWED_CATEGORIES = CATEGORY_ORDER
 SCHEMA_VERSION = 3
+# The source is released as a complete monthly snapshot. A pack remains marked
+# fresh for 38 days after its source-through date, leaving one week after a
+# typical month-end refresh, and scans fail closed at that boundary. The 60-day
+# expiry is a hard distribution and cleanup limit for the already-disabled pack.
+FRESH_UNTIL_DAYS_AFTER_SOURCE_THROUGH = 38
+EXPIRES_AT_DAYS_AFTER_SOURCE_THROUGH = 60
 PACK_FILENAME = "chicago_beta.sqlite"
 MANIFEST_FILENAME = "chicago_beta.manifest.json"
 COMPRESSED_FILENAME = f"{PACK_FILENAME}.gz"
@@ -155,10 +161,64 @@ def shift_months(value: dt.date, months: int) -> dt.date:
     return dt.date(month_index // 12, month_index % 12 + 1, 1)
 
 
+def derive_freshness_dates(source_through_date: str) -> tuple[str, str]:
+    try:
+        source_through = dt.date.fromisoformat(source_through_date)
+    except (TypeError, ValueError) as error:
+        raise RuntimeError("source_through_date must use YYYY-MM-DD") from error
+    if source_through.isoformat() != source_through_date:
+        raise RuntimeError("source_through_date must use canonical YYYY-MM-DD")
+    fresh_until = source_through + dt.timedelta(days=FRESH_UNTIL_DAYS_AFTER_SOURCE_THROUGH)
+    expires_at = source_through + dt.timedelta(days=EXPIRES_AT_DAYS_AFTER_SOURCE_THROUGH)
+    return fresh_until.isoformat(), expires_at.isoformat()
+
+
+def validate_freshness_metadata(metadata: dict[str, str]) -> tuple[str, str]:
+    source_through = metadata.get("source_through_date")
+    fresh_until = metadata.get("fresh_until_date")
+    expires_at = metadata.get("expires_at_date")
+    if not source_through or not fresh_until or not expires_at:
+        raise RuntimeError(
+            "source_through_date, fresh_until_date, and expires_at_date are required"
+        )
+    expected_fresh_until, expected_expires_at = derive_freshness_dates(source_through)
+    if fresh_until != expected_fresh_until or expires_at != expected_expires_at:
+        raise RuntimeError(
+            "freshness dates do not match the documented source-through policy"
+        )
+    return fresh_until, expires_at
+
+
 def derive_period(max_source_date: str, months: int) -> tuple[dt.date, dt.date]:
     if months < 1:
         raise ValueError("months must be positive")
     end_exclusive = first_day_of_month(parse_socrata_date(max_source_date))
+    return shift_months(end_exclusive, -months), end_exclusive
+
+
+def derive_pinned_period(
+    max_source_date: str,
+    requested_period_end: str,
+    months: int,
+) -> tuple[dt.date, dt.date]:
+    if months < 1:
+        raise ValueError("months must be positive")
+    try:
+        end_exclusive = dt.date.fromisoformat(requested_period_end)
+    except (TypeError, ValueError) as error:
+        raise ValueError("--period-end must use YYYY-MM-DD") from error
+    if end_exclusive.isoformat() != requested_period_end or end_exclusive.day != 1:
+        raise ValueError("--period-end must be the first day of a month in YYYY-MM-DD format")
+
+    max_observed_date = parse_socrata_date(max_source_date).date()
+    latest_complete_end_exclusive = first_day_of_month(max_observed_date)
+    if end_exclusive > latest_complete_end_exclusive:
+        raise ValueError(
+            f"--period-end {requested_period_end} would include an incomplete or "
+            f"unobserved month; latest allowed value is "
+            f"{latest_complete_end_exclusive.isoformat()} based on observed source "
+            f"maximum {max_observed_date.isoformat()}"
+        )
     return shift_months(end_exclusive, -months), end_exclusive
 
 
@@ -1210,6 +1270,7 @@ def build_pack(
     distribution: dict[int, int],
     metadata: dict[str, str],
 ) -> None:
+    validate_freshness_metadata(metadata)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = output_path.with_suffix(".tmp.sqlite")
     temporary.unlink(missing_ok=True)
@@ -1328,6 +1389,8 @@ def build_manifest(
             "start": metadata["period_start"],
             "end_exclusive": metadata["period_end_exclusive"],
             "source_through_date": metadata["source_through_date"],
+            "fresh_until_date": metadata["fresh_until_date"],
+            "expires_at_date": metadata["expires_at_date"],
             "months": int(metadata["period_months"]),
         },
         "sources": {
@@ -1461,7 +1524,7 @@ def build_manifest(
         "disclosure_validation": disclosure,
         "utility_validation": validation_metrics,
         "display": {
-            "product_name": "Cooked Score Beta",
+            "product_name": "Cooked Score",
             "methodology_name": "Reported Incident Exposure Index",
             "disclaimer": DISCLAIMER,
             "source_limitation": SOURCE_LIMITATION,
@@ -1536,14 +1599,19 @@ def main() -> int:
 
     iucr_mapping, _mapping_document = load_frozen_iucr_mapping(args.iucr_mapping)
     max_date = discover_max_date(iucr_mapping)
-    if args.period_end:
-        end_exclusive = dt.date.fromisoformat(args.period_end)
-        if end_exclusive.day != 1:
-            raise SystemExit("--period-end must be the first day of a month")
-        start = shift_months(end_exclusive, -args.months)
-    else:
-        start, end_exclusive = derive_period(max_date, args.months)
+    try:
+        if args.period_end:
+            start, end_exclusive = derive_pinned_period(
+                max_date,
+                args.period_end,
+                args.months,
+            )
+        else:
+            start, end_exclusive = derive_period(max_date, args.months)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
     source_through = end_exclusive - dt.timedelta(days=1)
+    fresh_until, expires_at = derive_freshness_dates(source_through.isoformat())
     period_slug = f"{start.isoformat()}_{end_exclusive.isoformat()}"
     incident_snapshot = args.cache_dir / f"incidents_iucr_v3_{period_slug}.jsonl.gz"
     boundary_snapshot = args.cache_dir / "community_areas.json.gz"
@@ -1637,12 +1705,14 @@ def main() -> int:
         "city": "Chicago",
         "state": "IL",
         "country": "US",
-        "product_name": "Cooked Score Beta",
+        "product_name": "Cooked Score",
         "methodology_name": "Reported Incident Exposure Index",
         "methodology_version": "beta-cell250-q5-area-v3",
         "period_start": start.isoformat(),
         "period_end_exclusive": end_exclusive.isoformat(),
         "source_through_date": source_through.isoformat(),
+        "fresh_until_date": fresh_until,
+        "expires_at_date": expires_at,
         "period_months": str(args.months),
         "source_dataset_id": CRIME_DATASET_ID,
         "source_url": CRIME_SOURCE_URL,

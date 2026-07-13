@@ -14,7 +14,7 @@ struct AuthScreen: View {
                     Image(systemName: "scope")
                         .font(.title2.weight(.black))
                         .foregroundStyle(AICTheme.mint)
-                    Text("AIC / CHICAGO BETA")
+                    Text("AIC / CHICAGO")
                         .font(.caption.weight(.heavy))
                         .tracking(1.8)
                 }
@@ -24,7 +24,7 @@ struct AuthScreen: View {
                         .font(.system(size: 50, weight: .black, design: .rounded))
                         .tracking(-2.2)
                         .minimumScaleFactor(0.72)
-                    Text("A quick, local estimate of historical reported-incident concentration for a fixed 500-meter circle—without uploading your scan location.")
+                    Text("A quick, local estimate of historical reported-incident concentration for a fixed 500-meter (about 0.3-mile) radius—without uploading your scan location.")
                         .font(.title3)
                         .foregroundStyle(AICTheme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -70,7 +70,17 @@ struct AuthScreen: View {
                     .disabled(model.isBusy)
                     .accessibilityHint("Creates or opens your AIC account using Apple.")
 
-                    Text("Every account gets a unique public @username. AIC requests no Apple name or email and never stores scan locations in your account.")
+                    Button("Continue without an account") {
+                        model.continueWithoutAccount()
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.white)
+                    .disabled(model.isBusy)
+                    .accessibilityHint("Returns to private on-device scanning without creating an account.")
+
+                    Text("An account is optional and only adds a public @username to receipts. AIC requests no Apple name or email and never stores scan locations in your account.")
                         .font(.caption)
                         .foregroundStyle(AICTheme.secondaryText)
                         .multilineTextAlignment(.center)

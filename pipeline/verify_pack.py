@@ -23,9 +23,9 @@ EXPECTED_AGGREGATE_COLUMNS = [
     "motor_vehicle_theft_band",
 ]
 EXPECTED_DISCLAIMER = (
-    "Cooked Score Beta compares historical reported-incident concentration around "
-    "this location with eligible Chicago comparison locations. It is not a live "
-    "safety assessment or personal-risk prediction."
+    "Cooked Score is a historical data index that compares reported-incident "
+    "concentration around this location with eligible Chicago comparison locations. "
+    "It is not a live safety assessment or personal-risk prediction."
 )
 EXPECTED_PRIVACY = "nonoverlapping_250m_cells_independent_q5_bands_no_exact_or_residual_total"
 PROHIBITED_AGGREGATE_FRAGMENTS = (
@@ -186,6 +186,17 @@ def verify(pack_path: Path, manifest_path: Path) -> dict[str, object]:
         for key, expected in expected_metadata.items():
             if required_metadata(connection, key) != expected:
                 raise RuntimeError(f"metadata mismatch for {key}")
+        freshness_metadata = {
+            key: required_metadata(connection, key)
+            for key in ("source_through_date", "fresh_until_date", "expires_at_date")
+        }
+        builder.validate_freshness_metadata(freshness_metadata)
+        manifest_period = manifest.get("period")
+        if not isinstance(manifest_period, dict):
+            raise RuntimeError("manifest period metadata is missing")
+        for key, value in freshness_metadata.items():
+            if manifest_period.get(key) != value:
+                raise RuntimeError(f"manifest period metadata mismatch for {key}")
         if required_metadata(connection, "disclaimer") != EXPECTED_DISCLAIMER:
             raise RuntimeError("required disclaimer text does not match")
 

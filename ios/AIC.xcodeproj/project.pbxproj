@@ -10,6 +10,7 @@
 		015109C1B9E6AB42A8DA3613 /* ReceiptScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03250ECA373FADF150DEE56F /* ReceiptScreen.swift */; };
 		0F37AABC09A74A92D7FD9CD7 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFA9E3BEF6817D460D16EF1 /* libsqlite3.tbd */; };
 		0F5527D9A2F09AE48B0FDD00 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE49B9ADE590802F4565213B /* SettingsScreen.swift */; };
+		1913E74601619577C4D5807D /* AICMeasurementPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17276F89067B3C1C42C45B08 /* AICMeasurementPreference.swift */; };
 		2019E3D0013C09142067D092 /* AICCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 140B755B541B3F810BAD0A9A /* AICCore.framework */; };
 		21854932DB25C42FBD04788E /* OfflinePinPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D64C07A16D8F9E8EDF3A69E /* OfflinePinPicker.swift */; };
 		25BCC2683DD9B287FF9914D3 /* AICTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E40AD378C057D0C91041FF /* AICTheme.swift */; };
@@ -17,6 +18,7 @@
 		30DAD16FDA87FF118E26A41C /* LocalOperationNetworkPrivacyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBADAD658F5BB58B075695C /* LocalOperationNetworkPrivacyTests.swift */; };
 		39C0562735731E08C3F52E37 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243400E0787761B4101DF16A /* ShareSheet.swift */; };
 		3CE6D41958A81594FB6381FB /* LocalScanEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F62DE0819D6764511D984B /* LocalScanEngine.swift */; };
+		3D24C949E9FD3BE8F3DBB4AC /* DataPassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA9C21AEF29695627C875E8 /* DataPassportView.swift */; };
 		475C6402D1FACD3A82DC9024 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 92A7F1251426CBB132743484 /* PrivacyInfo.xcprivacy */; };
 		521D5D5C2297926A7117BDE4 /* ChicagoPackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A770A064BF4F11E027BA3C28 /* ChicagoPackTests.swift */; };
 		55EFDF6ABA2F7D8ADBF43980 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 142C5D640F8C2621C29A57AB /* Assets.xcassets */; };
@@ -109,6 +111,7 @@
 		140B755B541B3F810BAD0A9A /* AICCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AICCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		142C5D640F8C2621C29A57AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		16C99D90517635B51352B1F8 /* MainFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlowView.swift; sourceTree = "<group>"; };
+		17276F89067B3C1C42C45B08 /* AICMeasurementPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICMeasurementPreference.swift; sourceTree = "<group>"; };
 		1D64C07A16D8F9E8EDF3A69E /* OfflinePinPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflinePinPicker.swift; sourceTree = "<group>"; };
 		243400E0787761B4101DF16A /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		2BE845CFEAF9A7390B73DCE6 /* UsernamePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernamePolicy.swift; sourceTree = "<group>"; };
@@ -128,6 +131,7 @@
 		A6154582F9D92869EB5431C8 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		A770A064BF4F11E027BA3C28 /* ChicagoPackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChicagoPackTests.swift; sourceTree = "<group>"; };
 		AAFC8EA17FB5B2740932B1EB /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
+		ACA9C21AEF29695627C875E8 /* DataPassportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPassportView.swift; sourceTree = "<group>"; };
 		B5E40AD378C057D0C91041FF /* AICTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICTheme.swift; sourceTree = "<group>"; };
 		B72B666D147B2204F047E0E1 /* UsernamePolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernamePolicyTests.swift; sourceTree = "<group>"; };
 		BBF50D9C7DA59E90EB4609D9 /* AccountAPISchemaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAPISchemaTests.swift; sourceTree = "<group>"; };
@@ -257,6 +261,7 @@
 		9CB024100628553F3A50F52C /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				ACA9C21AEF29695627C875E8 /* DataPassportView.swift */,
 				39B6F054A79305E4EF637637 /* HomeScreen.swift */,
 				16C99D90517635B51352B1F8 /* MainFlowView.swift */,
 				1D64C07A16D8F9E8EDF3A69E /* OfflinePinPicker.swift */,
@@ -349,6 +354,7 @@
 		FEDC229912EA92C458AAD28F /* Design */ = {
 			isa = PBXGroup;
 			children = (
+				17276F89067B3C1C42C45B08 /* AICMeasurementPreference.swift */,
 				B5E40AD378C057D0C91041FF /* AICTheme.swift */,
 			);
 			path = Design;
@@ -501,11 +507,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				92DD0BFE4F974BB0E52A735E /* AICApp.swift in Sources */,
+				1913E74601619577C4D5807D /* AICMeasurementPreference.swift in Sources */,
 				25BCC2683DD9B287FF9914D3 /* AICTheme.swift in Sources */,
 				B22B381351B7C2E1F1819B6F /* AccountAPI.swift in Sources */,
 				6003CDAA702AFB26FDDD98F1 /* AppModel.swift in Sources */,
 				F3C19DE97863823E407E848A /* AppleNonce.swift in Sources */,
 				60B50571445D5FE219E29C93 /* AuthScreen.swift in Sources */,
+				3D24C949E9FD3BE8F3DBB4AC /* DataPassportView.swift in Sources */,
 				E9CC4575D063CC342F09D46D /* HomeScreen.swift in Sources */,
 				9D4098034C8BDBD607F0311F /* KeychainSessionStore.swift in Sources */,
 				3CE6D41958A81594FB6381FB /* LocalScanEngine.swift in Sources */,
@@ -604,7 +612,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -670,7 +678,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

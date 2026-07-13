@@ -106,7 +106,7 @@ try require(
     "balanced category estimates do not reconcile to the rounded estimated total"
 )
 try require(
-    ChicagoScanResult.requiredDisclaimer == "Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.",
+    ChicagoScanResult.requiredDisclaimer == "Cooked Score is a historical data index that compares reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.",
     "required disclaimer drifted"
 )
 let packDisclaimer = try pack.metadataValue(for: "disclaimer")

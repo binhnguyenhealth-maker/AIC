@@ -50,6 +50,43 @@ public struct CategoryCount: Codable, Equatable, Identifiable, Sendable {
     }
 }
 
+public enum PackFreshnessState: String, Codable, Equatable, Sendable {
+    case withinUpdateWindow
+    case updateDueSoon
+    case blocked
+}
+
+public struct PackFreshnessSummary: Codable, Equatable, Sendable {
+    public let sourceThroughDate: String
+    public let periodStart: String
+    public let sourceRetrievedAt: Date
+    public let freshUntilDate: String
+    public let expiresAtDate: String
+    public let state: PackFreshnessState
+    public let daysSinceSourceThrough: Int
+    public let daysUntilCutoff: Int
+
+    public init(
+        sourceThroughDate: String,
+        periodStart: String,
+        sourceRetrievedAt: Date,
+        freshUntilDate: String,
+        expiresAtDate: String,
+        state: PackFreshnessState,
+        daysSinceSourceThrough: Int,
+        daysUntilCutoff: Int
+    ) {
+        self.sourceThroughDate = sourceThroughDate
+        self.periodStart = periodStart
+        self.sourceRetrievedAt = sourceRetrievedAt
+        self.freshUntilDate = freshUntilDate
+        self.expiresAtDate = expiresAtDate
+        self.state = state
+        self.daysSinceSourceThrough = daysSinceSourceThrough
+        self.daysUntilCutoff = daysUntilCutoff
+    }
+}
+
 public struct ChicagoScanResult: Codable, Equatable, Sendable {
     public let cookedScore: Int
     public let chicagoPercentile: Double
@@ -91,7 +128,7 @@ public struct ChicagoScanResult: Codable, Equatable, Sendable {
         } ?? CategoryCount(category: .theft, count: 0)
     }
 
-    public static let requiredDisclaimer = "Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction."
+    public static let requiredDisclaimer = "Cooked Score is a historical data index that compares reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction."
     public static let estimateDisclosure = "Incident counts are privacy-coarsened estimates, not exact totals."
 }
 

@@ -19,11 +19,22 @@ struct ReceiptCardView: View {
                         Text("AIC")
                             .font(.system(size: 20 * scale, weight: .black, design: .rounded))
                         Spacer()
-                        Text("CHICAGO / BETA")
+                        Text("CHICAGO / HISTORICAL")
                             .font(.system(size: 8 * scale, weight: .black))
                             .tracking(1.2 * scale)
                             .foregroundStyle(AICTheme.mint)
                     }
+
+                    Text("DATA THROUGH \(payload.sourceThroughDate) · NOT LIVE")
+                        .font(.system(size: 10 * scale, weight: .black, design: .monospaced))
+                        .tracking(0.5 * scale)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, 10 * scale)
+                        .padding(.vertical, 6 * scale)
+                        .background(AICTheme.coral.opacity(0.92), in: Capsule())
+                        .padding(.top, 10 * scale)
+                        .accessibilityLabel("Data through \(payload.sourceThroughDate). Not live.")
 
                     Spacer()
 
@@ -61,7 +72,7 @@ struct ReceiptCardView: View {
                         .padding(.top, 15 * scale)
                     }
 
-                    Text("\(payload.broadTimeBucket) · Historical source through \(payload.sourceThroughDate)")
+                    Text(payload.broadTimeBucket)
                         .font(.system(size: 9 * scale, weight: .semibold))
                         .foregroundStyle(AICTheme.secondaryText)
                         .padding(.top, 6 * scale)

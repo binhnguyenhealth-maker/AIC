@@ -1,19 +1,21 @@
-AIC turns official historical Chicago incident records into a quick, descriptive Cooked Score Beta.
+AIC turns official historical Chicago incident records into a quick, descriptive Cooked Score.
 
-Tap Scan Me or choose a point on the offline Chicago picker. AIC estimates the concentration of four supported incident categories for a fixed 500-metre circle and compares the result with eligible Chicago reference locations. The scan runs on your iPhone against a bundled data pack.
+Tap Scan My Area or Choose another spot to use the offline Chicago picker. AIC estimates the concentration of four supported incident categories for a fixed 500-meter (about 0.3-mile) radius and compares the result with eligible Chicago reference locations. The scan runs on your iPhone against a bundled data pack. Distance labels follow your iPhone by default, and you can choose U.S. or metric units in Settings without changing the calculation.
 
 AT A GLANCE
-• Cooked Score Beta, rounded to the nearest five
+• Cooked Score, rounded to the nearest five
 • Relative Chicago percentile and estimated contributing incident count
 • Assault/battery, robbery, theft, and motor-vehicle theft breakdown
-• Approximate neighborhood and source-through date
-• On-device Cooked Receipt with username and neighborhood controls
+• Approximate neighborhood and exact data-through date beside every score
+• On-device Cooked Receipt that repeats the data-through date, with optional username and neighborhood controls
 • Native iOS sharing with no precise location in the receipt
 
 BUILT FOR LOCATION PRIVACY
 AIC does not send normal scan coordinates, manual pins, addresses, routes, geographic cells, or scan history to its account service. It never requests background location. If you deny location access, the manual Chicago picker remains available.
 
 IMPORTANT LIMITATION
-Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction. It does not promise that a place is safe or unsafe and should not be used for emergency or navigation decisions.
+Cooked Score is a historical data index that compares reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction. Every score and receipt states the exact date on which the included historical window ends and that the data is not live. Source records dated after that date are not included, and later additions or revisions may also be absent. AIC refuses to produce a score when its bundled data pack is outside the defined update window.
 
-Chicago only during this beta. Source coverage and methodology are shown in the app.
+AIC does not promise that a place is safe or unsafe and should not be used for emergency or navigation decisions.
+
+This release supports eligible Chicago locations only. Source coverage, data-through date, and methodology are shown in the app.

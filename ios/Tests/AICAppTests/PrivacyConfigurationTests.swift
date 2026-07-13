@@ -41,6 +41,44 @@ final class PrivacyConfigurationTests: XCTestCase {
         }
     }
 
+    func testMeasurementPreferenceDefaultsToUSForUSLocaleAndMetricElsewhere() {
+        XCTAssertEqual(
+            AICMeasurementPreference.automatic.resolvedSystem(for: Locale(identifier: "en-US")),
+            .us
+        )
+        XCTAssertEqual(
+            AICMeasurementPreference.automatic.resolvedSystem(for: Locale(identifier: "fr-FR")),
+            .metric
+        )
+        XCTAssertEqual(AICMeasurementPreference.us.resolvedSystem(), .us)
+        XCTAssertEqual(AICMeasurementPreference.metric.resolvedSystem(), .metric)
+    }
+
+    func testUSAndMetricRadiusLabelsDescribeTheSameFixedCalculation() {
+        XCTAssertEqual(AICDistanceSystem.us.compactRadius, "0.3 MI")
+        XCTAssertEqual(AICDistanceSystem.us.radiusDescription, "about 0.3 mi (1,640 ft)")
+        XCTAssertEqual(AICDistanceSystem.metric.compactRadius, "500 M")
+        XCTAssertEqual(AICDistanceSystem.metric.radiusDescription, "500 m")
+    }
+
+    func testUserDefaultsReasonIsDeclaredInPrivacyManifest() throws {
+        let iosRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let data = try Data(contentsOf: iosRoot.appendingPathComponent("AIC/Resources/PrivacyInfo.xcprivacy"))
+        let manifest = try XCTUnwrap(PropertyListSerialization.propertyList(
+            from: data,
+            options: [],
+            format: nil
+        ) as? [String: Any])
+        let accessedTypes = try XCTUnwrap(manifest["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
+        let userDefaults = try XCTUnwrap(accessedTypes.first {
+            $0["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategoryUserDefaults"
+        })
+        XCTAssertEqual(userDefaults["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])
+    }
+
     @MainActor
     func testPermissionDenialAndRestrictionOfferManualFallback() {
         XCTAssertTrue(LocationService.offersManualFallback(for: .denied))

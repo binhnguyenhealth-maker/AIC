@@ -42,6 +42,21 @@ final class ReceiptPrivacyTests: XCTestCase {
         XCTAssertNil(payload.locationLabel)
     }
 
+    func testGuestReceiptCannotEncodeAnEmptyUsername() throws {
+        let payload = ReceiptComposer.make(
+            result: result,
+            username: "",
+            showUsername: true,
+            locationMode: .neighborhood
+        )
+
+        XCTAssertNil(payload.username)
+        let object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(payload)) as? [String: Any]
+        )
+        XCTAssertNil(object["username"])
+    }
+
     func testNeighborhoodOffFallsBackToCityOnly() {
         let payload = ReceiptComposer.make(
             result: result,

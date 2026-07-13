@@ -1,10 +1,7 @@
 import AICCore
 import Foundation
 
-struct PackSummary: Equatable {
-    let sourceThroughDate: String
-    let periodStart: String
-}
+typealias PackSummary = PackFreshnessSummary
 
 struct LocalScanEngine {
     private let packURL: URL?
@@ -28,15 +25,7 @@ struct LocalScanEngine {
     func packSummary() async throws -> PackSummary {
         guard let packURL else { throw ChicagoPackError.missingPack }
         return try await Task.detached(priority: .utility) {
-            let pack = try ChicagoPack(url: packURL)
-            guard let sourceThroughDate = try pack.metadataValue(for: "source_through_date"),
-                  let periodStart = try pack.metadataValue(for: "period_start") else {
-                throw ChicagoPackError.invalidDatabase("validated source metadata is unavailable")
-            }
-            return PackSummary(
-                sourceThroughDate: sourceThroughDate,
-                periodStart: periodStart
-            )
+            try ChicagoPack.inspectFreshness(at: packURL)
         }.value
     }
 

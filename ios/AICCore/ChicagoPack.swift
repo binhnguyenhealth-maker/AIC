@@ -8,6 +8,7 @@ public enum ChicagoPackError: Error, Equatable, LocalizedError {
     case outsideChicago
     case noEligibleReferences
     case insufficientCellCoverage
+    case packUpdateRequired
 
     public var errorDescription: String? {
         switch self {
@@ -17,6 +18,7 @@ public enum ChicagoPackError: Error, Equatable, LocalizedError {
         case .outsideChicago: "Choose a point inside Chicago."
         case .noEligibleReferences: "No eligible Chicago comparison locations are available."
         case .insufficientCellCoverage: "This point is too close to the Chicago boundary for a complete 500 m comparison. Choose another nearby point."
+        case .packUpdateRequired: "This data pack needs an update before another scan. Please update the app and try again."
         }
     }
 }
@@ -40,15 +42,32 @@ public final class ChicagoPack {
     public static let requiredCountSemantics = "privacy_coarsened_estimated_contributing_incidents"
     public static let requiredReferenceEligibility = "all_100m_disk_lattice_points_inside_official_city_union"
     public static let requiredNetworkPolicy = "local_only_no_coordinates_query_nodes_or_geographic_cells_uploaded"
+    public static let updateDueSoonDaysBeforeCutoff = 7
+    private static var utcCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        return calendar
+    }
+    // The source is packaged as a complete monthly snapshot. These values must
+    // match pipeline/build_chicago_pack.py so stale packs fail closed.
+    public static let freshUntilDaysAfterSourceThrough = 38
+    public static let expiresAtDaysAfterSourceThrough = 60
 
     private var database: OpaquePointer?
     private var validatedMetadata: PackMetadata?
     private var cityBoundary: [GeoPolygon] = []
     private var preparedNeighborhoods: [PreparedNeighborhood] = []
+    private let currentDateProvider: () -> Date
     private let destructor = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
     private struct PackMetadata {
         let sourceThroughDate: String
+        let sourceThrough: Date
+        let sourceRetrievedAt: Date
+        let freshUntilDate: Date
+        let freshUntilDateString: String
+        let expiresAtDate: Date
+        let expiresAtDateString: String
         let periodStart: String
         let methodologyVersion: String
         let aggregateRowRange: ClosedRange<Int64>
@@ -56,7 +75,16 @@ public final class ChicagoPack {
         let aggregateCellCount: Int64
     }
 
-    public init(url: URL) throws {
+    public convenience init(url: URL, currentDateProvider: @escaping () -> Date = Date.init) throws {
+        try self.init(url: url, currentDateProvider: currentDateProvider, permitsStaleInspection: false)
+    }
+
+    private init(
+        url: URL,
+        currentDateProvider: @escaping () -> Date,
+        permitsStaleInspection: Bool
+    ) throws {
+        self.currentDateProvider = currentDateProvider
         var opened: OpaquePointer?
         let flags = SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX
         guard sqlite3_open_v2(url.path, &opened, flags, nil) == SQLITE_OK else {
@@ -82,6 +110,9 @@ public final class ChicagoPack {
             }
             try validateTableContracts()
             let metadata = try validateMetadata()
+            if !permitsStaleInspection {
+                try requireFreshPack(metadata)
+            }
             try validateAggregateRectangle(metadata)
             cityBoundary = try loadCityBoundary()
             preparedNeighborhoods = try loadNeighborhoods()
@@ -97,13 +128,28 @@ public final class ChicagoPack {
         if let database { sqlite3_close(database) }
     }
 
-    public func scan(at coordinate: ScanCoordinate) throws -> ChicagoScanResult {
-        guard coordinate.isGeographicallyValid, ChicagoBounds.contains(coordinate) else {
-            throw ChicagoPackError.outsideChicago
+    public static func inspectFreshness(
+        at url: URL,
+        currentDateProvider: @escaping () -> Date = Date.init
+    ) throws -> PackFreshnessSummary {
+        let pack = try ChicagoPack(
+            url: url,
+            currentDateProvider: currentDateProvider,
+            permitsStaleInspection: true
+        )
+        guard let metadata = pack.validatedMetadata else {
+            throw ChicagoPackError.invalidDatabase("pack metadata was not validated")
         }
+        return pack.freshnessSummary(for: metadata)
+    }
 
+    public func scan(at coordinate: ScanCoordinate) throws -> ChicagoScanResult {
         guard let metadata = validatedMetadata else {
             throw ChicagoPackError.invalidDatabase("pack metadata was not validated")
+        }
+        try requireFreshPack(metadata)
+        guard coordinate.isGeographicallyValid, ChicagoBounds.contains(coordinate) else {
+            throw ChicagoPackError.outsideChicago
         }
         let snappedCenter = snappedLocalDecimeters(coordinate)
         guard polygonsContain(cityBoundary, coordinate: coordinate) else {
@@ -530,9 +576,37 @@ public final class ChicagoPack {
         }
 
         let sourceThroughDate = try requiredMetadata("source_through_date")
+        let sourceRetrievedAtString = try requiredMetadata("source_retrieved_at")
+        let freshUntilDateString = try requiredMetadata("fresh_until_date")
+        let expiresAtDateString = try requiredMetadata("expires_at_date")
         let periodStart = try requiredMetadata("period_start")
-        guard isISODate(sourceThroughDate), isISODate(periodStart) else {
-            throw ChicagoPackError.invalidDatabase("source dates must use YYYY-MM-DD")
+        guard let sourceThrough = parsedISODate(sourceThroughDate),
+              let sourceRetrievedAt = parsedISOTimestamp(sourceRetrievedAtString),
+              let freshUntilDate = parsedISODate(freshUntilDateString),
+              let expiresAtDate = parsedISODate(expiresAtDateString),
+              let periodStartDate = parsedISODate(periodStart) else {
+            throw ChicagoPackError.invalidDatabase(
+                "source and freshness dates must use YYYY-MM-DD and source_retrieved_at must use YYYY-MM-DDTHH:MM:SSZ"
+            )
+        }
+        guard periodStartDate <= sourceThrough,
+              sourceThrough <= sourceRetrievedAt else {
+            throw ChicagoPackError.invalidDatabase(
+                "source chronology must start on or before source-through and be retrieved on or after source-through"
+            )
+        }
+        let calendar = Self.utcCalendar
+        guard calendar.date(
+            byAdding: .day,
+            value: Self.freshUntilDaysAfterSourceThrough,
+            to: sourceThrough
+        ) == freshUntilDate,
+        calendar.date(
+            byAdding: .day,
+            value: Self.expiresAtDaysAfterSourceThrough,
+            to: sourceThrough
+        ) == expiresAtDate else {
+            throw ChicagoPackError.invalidDatabase("freshness dates do not match the source-through policy")
         }
 
         let methodologyVersion = try requiredMetadata("methodology_version")
@@ -598,11 +672,60 @@ public final class ChicagoPack {
 
         return PackMetadata(
             sourceThroughDate: sourceThroughDate,
+            sourceThrough: sourceThrough,
+            sourceRetrievedAt: sourceRetrievedAt,
+            freshUntilDate: freshUntilDate,
+            freshUntilDateString: freshUntilDateString,
+            expiresAtDate: expiresAtDate,
+            expiresAtDateString: expiresAtDateString,
             periodStart: periodStart,
             methodologyVersion: methodologyVersion,
             aggregateRowRange: rowMinimum ... rowMaximum,
             aggregateColumnRange: columnMinimum ... columnMaximum,
             aggregateCellCount: aggregateCellCount
+        )
+    }
+
+    private func requireFreshPack(_ metadata: PackMetadata) throws {
+        guard currentDateProvider() < metadata.freshUntilDate else {
+            throw ChicagoPackError.packUpdateRequired
+        }
+    }
+
+    private func freshnessSummary(for metadata: PackMetadata) -> PackFreshnessSummary {
+        let now = currentDateProvider()
+        let calendar = Self.utcCalendar
+        let updateDueSoonDate = calendar.date(
+            byAdding: .day,
+            value: -Self.updateDueSoonDaysBeforeCutoff,
+            to: metadata.freshUntilDate
+        )!
+        let state: PackFreshnessState
+        if now >= metadata.freshUntilDate {
+            state = .blocked
+        } else if now >= updateDueSoonDate {
+            state = .updateDueSoon
+        } else {
+            state = .withinUpdateWindow
+        }
+        let today = calendar.startOfDay(for: now)
+        let daysSinceSourceThrough = max(
+            0,
+            calendar.dateComponents([.day], from: metadata.sourceThrough, to: today).day ?? 0
+        )
+        let daysUntilCutoff = max(
+            0,
+            calendar.dateComponents([.day], from: today, to: metadata.freshUntilDate).day ?? 0
+        )
+        return PackFreshnessSummary(
+            sourceThroughDate: metadata.sourceThroughDate,
+            periodStart: metadata.periodStart,
+            sourceRetrievedAt: metadata.sourceRetrievedAt,
+            freshUntilDate: metadata.freshUntilDateString,
+            expiresAtDate: metadata.expiresAtDateString,
+            state: state,
+            daysSinceSourceThrough: daysSinceSourceThrough,
+            daysUntilCutoff: daysUntilCutoff
         )
     }
 
@@ -702,9 +825,9 @@ public final class ChicagoPack {
         return value
     }
 
-    private func isISODate(_ value: String) -> Bool {
+    private func parsedISODate(_ value: String) -> Date? {
         guard value.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil else {
-            return false
+            return nil
         }
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
@@ -712,7 +835,26 @@ public final class ChicagoPack {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.isLenient = false
-        return formatter.date(from: value) != nil
+        return formatter.date(from: value)
+    }
+
+    private func parsedISOTimestamp(_ value: String) -> Date? {
+        guard value.range(
+            of: #"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"#,
+            options: .regularExpression
+        ) != nil else {
+            return nil
+        }
+        let formatter = DateFormatter()
+        formatter.calendar = Self.utcCalendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        formatter.isLenient = false
+        guard let date = formatter.date(from: value), formatter.string(from: date) == value else {
+            return nil
+        }
+        return date
     }
 
     private func tableExists(_ name: String) throws -> Bool {

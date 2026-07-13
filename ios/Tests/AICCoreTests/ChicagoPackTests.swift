@@ -32,7 +32,7 @@ final class ChicagoPackTests: XCTestCase {
     }
 
     func testComputesAreaWeightedEstimateAndMidrankPercentile() throws {
-        let pack = try ChicagoPack(url: databaseURL)
+        let pack = try openFixturePack()
         let result = try pack.scan(at: fixtureCoordinate)
 
         XCTAssertEqual(result.estimatedIncidentCount, 632)
@@ -45,8 +45,93 @@ final class ChicagoPackTests: XCTestCase {
         XCTAssertEqual(result.methodologyVersion, ChicagoPack.supportedMethodologyVersion)
     }
 
+    func testScanSucceedsImmediatelyBeforeFreshnessBoundary() throws {
+        let pack = try ChicagoPack(
+            url: databaseURL,
+            currentDateProvider: { self.date("2026-08-06T23:59:59Z") }
+        )
+        XCTAssertNoThrow(try pack.scan(at: fixtureCoordinate))
+    }
+
+    func testFreshnessSummaryExposesValidatedMetadataAndUTCDayCounts() throws {
+        let summary = try ChicagoPack.inspectFreshness(
+            at: databaseURL,
+            currentDateProvider: { self.date("2026-07-12T23:59:59Z") }
+        )
+
+        XCTAssertEqual(summary.sourceThroughDate, "2026-06-30")
+        XCTAssertEqual(summary.periodStart, "2025-07-01")
+        XCTAssertEqual(summary.sourceRetrievedAt, date("2026-07-11T02:40:53Z"))
+        XCTAssertEqual(summary.freshUntilDate, "2026-08-07")
+        XCTAssertEqual(summary.expiresAtDate, "2026-08-29")
+        XCTAssertEqual(summary.state, .withinUpdateWindow)
+        XCTAssertEqual(summary.daysSinceSourceThrough, 12)
+        XCTAssertEqual(summary.daysUntilCutoff, 26)
+    }
+
+    func testFreshnessStatesUseExactUTCSevenDayWindowAndCutoff() throws {
+        let beforeWindow = try inspectFreshness(at: "2026-07-30T23:59:59Z")
+        XCTAssertEqual(beforeWindow.state, .withinUpdateWindow)
+        XCTAssertEqual(beforeWindow.daysUntilCutoff, 8)
+
+        let dueSoon = try inspectFreshness(at: "2026-07-31T00:00:00Z")
+        XCTAssertEqual(dueSoon.state, .updateDueSoon)
+        XCTAssertEqual(dueSoon.daysUntilCutoff, 7)
+
+        let finalFreshDay = try inspectFreshness(at: "2026-08-06T23:59:59Z")
+        XCTAssertEqual(finalFreshDay.state, .updateDueSoon)
+        XCTAssertEqual(finalFreshDay.daysUntilCutoff, 1)
+
+        let blocked = try inspectFreshness(at: "2026-08-07T00:00:00Z")
+        XCTAssertEqual(blocked.state, .blocked)
+        XCTAssertEqual(blocked.daysUntilCutoff, 0)
+        XCTAssertEqual(blocked.daysSinceSourceThrough, 38)
+    }
+
+    func testStalePackSummaryRemainsInspectableWhilePackOpenFailsClosed() throws {
+        let now = { self.date("2026-08-12T12:00:00Z") }
+        let summary = try ChicagoPack.inspectFreshness(
+            at: databaseURL,
+            currentDateProvider: now
+        )
+        XCTAssertEqual(summary.state, .blocked)
+        XCTAssertEqual(summary.daysUntilCutoff, 0)
+
+        XCTAssertThrowsError(try ChicagoPack(
+            url: databaseURL,
+            currentDateProvider: now
+        )) { error in
+            XCTAssertEqual(error as? ChicagoPackError, .packUpdateRequired)
+        }
+    }
+
+    func testPackOpenFailsClosedOnFreshnessBoundary() throws {
+        XCTAssertThrowsError(try ChicagoPack(
+            url: databaseURL,
+            currentDateProvider: { self.date("2026-08-07T00:00:00Z") }
+        )) { error in
+            XCTAssertEqual(error as? ChicagoPackError, .packUpdateRequired)
+            XCTAssertEqual(
+                (error as? ChicagoPackError)?.errorDescription,
+                "This data pack needs an update before another scan. Please update the app and try again."
+            )
+        }
+    }
+
+    func testLongLivedPackStopsScanningAtFreshnessBoundary() throws {
+        var currentDate = date("2026-08-06T23:59:59Z")
+        let pack = try ChicagoPack(
+            url: databaseURL,
+            currentDateProvider: { currentDate }
+        )
+        currentDate = date("2026-08-07T00:00:00Z")
+        XCTAssertThrowsError(try pack.scan(at: fixtureCoordinate)) { error in
+            XCTAssertEqual(error as? ChicagoPackError, .packUpdateRequired)
+        }
+    }
+
     func testSubMeterMovementThatSnapsToSameMeterIsDeterministic() throws {
-        let pack = try ChicagoPack(url: databaseURL)
+        let pack = try openFixturePack()
         let baseline = try pack.scan(at: fixtureCoordinate)
         let moved = ScanCoordinate(
             latitude: fixtureCoordinate.latitude + 0.4 / 111_320,
@@ -56,14 +141,14 @@ final class ChicagoPackTests: XCTestCase {
     }
 
     func testOfficialPolygonRejectsPointInsideRectangularBoundsButOutsideChicagoFixture() throws {
-        let pack = try ChicagoPack(url: databaseURL)
+        let pack = try openFixturePack()
         XCTAssertThrowsError(try pack.scan(at: ScanCoordinate(latitude: 41.88, longitude: -87.55))) { error in
             XCTAssertEqual(error as? ChicagoPackError, .outsideChicago)
         }
     }
 
     func testBoundaryPointWithoutComplete500MeterCoverageFailsClosed() throws {
-        let pack = try ChicagoPack(url: databaseURL)
+        let pack = try openFixturePack()
         XCTAssertThrowsError(try pack.scan(at: ScanCoordinate(latitude: 41.88, longitude: -87.6799))) { error in
             XCTAssertEqual(error as? ChicagoPackError, .insufficientCellCoverage)
         }
@@ -71,7 +156,7 @@ final class ChicagoPackTests: XCTestCase {
 
     func testMissingAggregateCellFailsClosedAtPackOpen() throws {
         try mutate("DELETE FROM aggregate_cells WHERE cell_row = 124 AND cell_column = 106")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     func testNonQuantizedCategoryBandIsRejected() throws {
@@ -79,34 +164,81 @@ final class ChicagoPackTests: XCTestCase {
             PRAGMA ignore_check_constraints = ON;
             UPDATE aggregate_cells SET robbery_band = 6 WHERE cell_row = 124 AND cell_column = 106;
             """)
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     func testResidualOrExactTotalColumnIsRejected() throws {
         try mutate("ALTER TABLE aggregate_cells ADD COLUMN total_count INTEGER")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     func testMissingSchemaMetadataIsRejected() throws {
         try mutate("DELETE FROM metadata WHERE key = 'schema_version'")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
+    }
+
+    func testMissingFreshnessMetadataIsRejected() throws {
+        try mutate("DELETE FROM metadata WHERE key = 'fresh_until_date'")
+        XCTAssertThrowsError(try openFixturePack())
+    }
+
+    func testMissingSourceRetrievedAtIsRejected() throws {
+        try mutate("DELETE FROM metadata WHERE key = 'source_retrieved_at'")
+        XCTAssertThrowsError(try openFixturePack()) { error in
+            XCTAssertEqual(
+                error as? ChicagoPackError,
+                .invalidDatabase("required metadata source_retrieved_at is missing")
+            )
+        }
+    }
+
+    func testMalformedSourceRetrievedAtIsRejected() throws {
+        try mutate("UPDATE metadata SET value = 'July 11, 2026' WHERE key = 'source_retrieved_at'")
+        XCTAssertThrowsError(try openFixturePack())
+    }
+
+    func testSourceThroughAfterRetrievalIsRejected() throws {
+        try mutate("UPDATE metadata SET value = '2026-06-29T23:59:59Z' WHERE key = 'source_retrieved_at'")
+        XCTAssertThrowsError(try openFixturePack()) { error in
+            XCTAssertEqual(
+                error as? ChicagoPackError,
+                .invalidDatabase(
+                    "source chronology must start on or before source-through and be retrieved on or after source-through"
+                )
+            )
+        }
+    }
+
+    func testPeriodStartAfterSourceThroughIsRejected() throws {
+        try mutate("UPDATE metadata SET value = '2026-07-01' WHERE key = 'period_start'")
+        XCTAssertThrowsError(try openFixturePack())
+    }
+
+    func testMalformedFreshnessMetadataIsRejected() throws {
+        try mutate("UPDATE metadata SET value = '2026-99-99' WHERE key = 'expires_at_date'")
+        XCTAssertThrowsError(try openFixturePack())
+    }
+
+    func testFreshnessMetadataThatDriftsFromPolicyIsRejected() throws {
+        try mutate("UPDATE metadata SET value = '2026-08-08' WHERE key = 'fresh_until_date'")
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     func testMismatchedDisclaimerIsRejected() throws {
         try mutate("UPDATE metadata SET value = 'wrong' WHERE key = 'disclaimer'")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     func testOldSchemaIsRejected() throws {
         try mutate("UPDATE metadata SET value = '2' WHERE key = 'schema_version'")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL)) { error in
+        XCTAssertThrowsError(try openFixturePack()) { error in
             XCTAssertEqual(error as? ChicagoPackError, .unsupportedSchema("2"))
         }
     }
 
     func testEstimatorMetadataDriftIsRejected() throws {
         try mutate("UPDATE metadata SET value = 'different' WHERE key = 'circle_estimator'")
-        XCTAssertThrowsError(try ChicagoPack(url: databaseURL))
+        XCTAssertThrowsError(try openFixturePack())
     }
 
     private func createFixture(at url: URL) throws {
@@ -124,6 +256,9 @@ final class ChicagoPackTests: XCTestCase {
         INSERT INTO metadata VALUES
           ('schema_version','3'),
           ('source_through_date','2026-06-30'),
+          ('source_retrieved_at','2026-07-11T02:40:53Z'),
+          ('fresh_until_date','2026-08-07'),
+          ('expires_at_date','2026-08-29'),
           ('period_start','2025-07-01'),
           ('methodology_version','beta-cell250-q5-area-v3'),
           ('radius_m','500.0'),
@@ -151,7 +286,7 @@ final class ChicagoPackTests: XCTestCase {
           ('reference_spacing_m','500.0'),
           ('reference_eligibility','all_100m_disk_lattice_points_inside_official_city_union'),
           ('ordinary_scan_network_policy','local_only_no_coordinates_query_nodes_or_geographic_cells_uploaded'),
-          ('disclaimer','Cooked Score Beta compares historical reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.');
+          ('disclaimer','Cooked Score is a historical data index that compares reported-incident concentration around this location with eligible Chicago comparison locations. It is not a live safety assessment or personal-risk prediction.');
         CREATE TABLE aggregate_cells(
           cell_row INTEGER NOT NULL,
           cell_column INTEGER NOT NULL,
@@ -186,6 +321,29 @@ final class ChicagoPackTests: XCTestCase {
             XCTFail(message)
             throw NSError(domain: "ChicagoPackTests", code: Int(status), userInfo: [NSLocalizedDescriptionKey: message])
         }
+    }
+
+    private func date(_ value: String) -> Date {
+        let formatter = ISO8601DateFormatter()
+        guard let date = formatter.date(from: value) else {
+            XCTFail("invalid test date: \(value)")
+            return .distantPast
+        }
+        return date
+    }
+
+    private func openFixturePack() throws -> ChicagoPack {
+        try ChicagoPack(
+            url: databaseURL,
+            currentDateProvider: { self.date("2026-07-12T12:00:00Z") }
+        )
+    }
+
+    private func inspectFreshness(at timestamp: String) throws -> PackFreshnessSummary {
+        try ChicagoPack.inspectFreshness(
+            at: databaseURL,
+            currentDateProvider: { self.date(timestamp) }
+        )
     }
 
     private func mutate(_ sql: String) throws {

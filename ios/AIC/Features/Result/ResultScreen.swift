@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ResultScreen: View {
     let result: ChicagoScanResult
+    let distanceSystem: AICDistanceSystem
     let onShare: () -> Void
 
     @State private var showMethodology = false
@@ -21,7 +22,7 @@ struct ResultScreen: View {
                 .padding(.bottom, 36)
             }
         }
-        .navigationTitle("Cooked Score Beta")
+        .navigationTitle("Cooked Score")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showMethodology) {
             MethodologySheet(result: result)
@@ -44,7 +45,7 @@ struct ResultScreen: View {
                             .accessibilityLabel("Cooked Score \(result.cookedScore) out of 100")
                     }
                     Spacer()
-                    Text("BETA")
+                    Text("HISTORICAL")
                         .font(.caption2.weight(.black))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
@@ -57,6 +58,25 @@ struct ResultScreen: View {
                     .font(.headline)
                     .foregroundStyle(AICTheme.mint)
 
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("DATA THROUGH \(result.sourceThroughDate) · NOT LIVE")
+                        .font(.caption.weight(.black))
+                        .tracking(0.7)
+                        .foregroundStyle(AICTheme.coral)
+                    Text("Source records dated after \(result.sourceThroughDate) are not included.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.white)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AICTheme.coral.opacity(0.11), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(AICTheme.coral.opacity(0.32), lineWidth: 1)
+                }
+                .accessibilityElement(children: .combine)
+
                 Text(ChicagoScanResult.requiredDisclaimer)
                     .font(.caption)
                     .foregroundStyle(AICTheme.secondaryText)
@@ -64,6 +84,14 @@ struct ResultScreen: View {
                 Text(ChicagoScanResult.estimateDisclosure)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(AICTheme.secondaryText)
+
+                Label(
+                    "Do not use for immediate safety, emergencies, or route decisions.",
+                    systemImage: "exclamationmark.triangle.fill"
+                )
+                .font(.caption.weight(.bold))
+                .foregroundStyle(AICTheme.coral)
+                .fixedSize(horizontal: false, vertical: true)
 
                 Button(action: onShare) {
                     Label("Generate Cooked Report", systemImage: "doc.text.image")
@@ -120,10 +148,10 @@ struct ResultScreen: View {
             VStack(alignment: .leading, spacing: 12) {
                 Label(result.neighborhood, systemImage: "mappin.circle.fill")
                     .font(.headline)
-                Text("Official Chicago community-area boundary · fixed 500 m estimate")
+                Text("Official Chicago community-area boundary · fixed \(distanceSystem.radiusDescription) radius")
                     .font(.caption)
                     .foregroundStyle(AICTheme.secondaryText)
-                Label("Local beta result · privacy-coarsened, non-overlapping source cells", systemImage: "checkmark.seal.fill")
+                Label("Local result · privacy-coarsened, non-overlapping source cells", systemImage: "checkmark.seal.fill")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(AICTheme.mint)
                 Divider().overlay(Color.white.opacity(0.12))
@@ -144,7 +172,7 @@ struct ResultScreen: View {
                     .font(.caption)
                     .foregroundStyle(AICTheme.secondaryText)
 
-                Button("How this beta score works") { showMethodology = true }
+                Button("How this score works") { showMethodology = true }
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(AICTheme.lavender)
             }
@@ -183,7 +211,7 @@ private struct MethodologySheet: View {
                     Text("Reported Incident Exposure Index")
                         .font(.title.weight(.black))
                     Text("The local pack assigns each selected historical incident to one non-overlapping 250 m cell. Each category is independently rounded to the nearest five before the pack ships. AIC estimates a fixed 500 m circle with a deterministic 10 × 10 midpoint area calculation, then compares the rounded estimate with Chicago locations calculated by the same method. The displayed score is rounded to the nearest five.")
-                    Text("Beta method")
+                    Text("Method")
                         .font(.headline)
                     Text("Scan coordinates are processed locally and snapped to a one-metre calculation grid. Boundary locations without a complete comparison circle are unavailable. Counts and category values are privacy-coarsened estimates, not exact totals. The pack contains no incident points, exact cell totals, residual totals, source record IDs, addresses, or dates.")
                     Text("Each selected incident contributes equally before privacy coarsening. There are no severity weights, recency weights, personal-risk probabilities, live conditions, causal claims, or cross-city comparisons. The current method is deterministic and provisional.")

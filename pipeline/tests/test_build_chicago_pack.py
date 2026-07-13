@@ -77,6 +77,55 @@ class ChicagoPackTests(unittest.TestCase):
         self.assertEqual("2025-07-01", start.isoformat())
         self.assertEqual("2026-07-01", end.isoformat())
 
+    def test_pinned_period_allows_only_months_before_observed_source_month(self):
+        start, end = builder.derive_pinned_period(
+            "2026-07-02T00:00:00.000",
+            "2026-07-01",
+            12,
+        )
+        self.assertEqual("2025-07-01", start.isoformat())
+        self.assertEqual("2026-07-01", end.isoformat())
+
+    def test_pinned_period_rejects_partial_future_and_empty_windows(self):
+        invalid_cases = (
+            ("2026-07-02T00:00:00.000", "2026-07-15", 12, "first day"),
+            ("2026-07-02T00:00:00.000", "2026-08-01", 12, "incomplete or unobserved"),
+            ("2026-06-30T23:59:59.000", "2026-07-01", 12, "incomplete or unobserved"),
+            ("2026-07-02T00:00:00.000", "2026-07-01", 0, "months must be positive"),
+        )
+        for max_source_date, period_end, months, message in invalid_cases:
+            with self.subTest(
+                max_source_date=max_source_date,
+                period_end=period_end,
+                months=months,
+            ):
+                with self.assertRaisesRegex(ValueError, message):
+                    builder.derive_pinned_period(max_source_date, period_end, months)
+
+    def test_freshness_dates_are_derived_from_source_through_date(self):
+        self.assertEqual(
+            ("2026-08-07", "2026-08-29"),
+            builder.derive_freshness_dates("2026-06-30"),
+        )
+
+    def test_freshness_metadata_rejects_missing_malformed_and_drifted_dates(self):
+        valid = {
+            "source_through_date": "2026-06-30",
+            "fresh_until_date": "2026-08-07",
+            "expires_at_date": "2026-08-29",
+        }
+        self.assertEqual(
+            ("2026-08-07", "2026-08-29"),
+            builder.validate_freshness_metadata(valid),
+        )
+        for invalid in (
+            {"source_through_date": "2026-06-30"},
+            {**valid, "expires_at_date": "not-a-date"},
+            {**valid, "fresh_until_date": "2026-08-08"},
+        ):
+            with self.assertRaises(RuntimeError):
+                builder.validate_freshness_metadata(invalid)
+
     def test_exact_category_mapping(self):
         mapping, document = builder.load_frozen_iucr_mapping(PIPELINE_DIR / "iucr_mapping.json")
         self.assertEqual(86, len(mapping))
@@ -213,6 +262,8 @@ class ChicagoPackTests(unittest.TestCase):
             "period_start": "2025-07-01",
             "period_end_exclusive": "2026-07-01",
             "source_through_date": "2026-06-30",
+            "fresh_until_date": "2026-08-07",
+            "expires_at_date": "2026-08-29",
         }
         with tempfile.TemporaryDirectory() as directory:
             first = Path(directory) / "first.sqlite"
@@ -297,7 +348,18 @@ class ChicagoPackTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             pack = Path(directory) / "order.sqlite"
-            builder.build_pack(pack, bands, [neighborhood], {0: 1}, {"schema_version": "3"})
+            builder.build_pack(
+                pack,
+                bands,
+                [neighborhood],
+                {0: 1},
+                {
+                    "schema_version": "3",
+                    "source_through_date": "2026-06-30",
+                    "fresh_until_date": "2026-08-07",
+                    "expires_at_date": "2026-08-29",
+                },
+            )
             connection = sqlite3.connect(pack)
             try:
                 for key, values in expected.items():

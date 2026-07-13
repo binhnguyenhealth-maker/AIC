@@ -5,11 +5,19 @@ struct ReceiptScreen: View {
     let result: ChicagoScanResult
     let username: String
 
-    @State private var showUsername = true
+    @State private var showUsername: Bool
     @State private var showNeighborhood = true
     @State private var artifact: ReceiptArtifact?
     @State private var rendering = false
     @State private var errorMessage: String?
+
+    init(result: ChicagoScanResult, username: String) {
+        self.result = result
+        self.username = UsernamePolicy.normalize(username)
+        _showUsername = State(initialValue: !self.username.isEmpty)
+    }
+
+    private var hasUsername: Bool { !username.isEmpty }
 
     private var payload: CookedReceiptPayload {
         ReceiptComposer.make(
@@ -31,15 +39,19 @@ struct ReceiptScreen: View {
 
                     AICCard {
                         VStack(spacing: 4) {
-                            Toggle("Show @\(username)", isOn: $showUsername)
-                            Divider().overlay(Color.white.opacity(0.08))
+                            if hasUsername {
+                                Toggle("Show @\(username)", isOn: $showUsername)
+                                Divider().overlay(Color.white.opacity(0.08))
+                            }
                             Toggle("Show \(result.neighborhood)", isOn: $showNeighborhood)
                         }
                         .font(.subheadline.weight(.semibold))
                         .tint(AICTheme.mint)
                     }
 
-                    Text("This receipt links your public username to the approximate area shown when both visibility options are on. Exact coordinates, addresses, routes, and timestamps cannot be included.")
+                    Text(hasUsername
+                         ? "This receipt links your public username to the approximate area shown when both visibility options are on. Exact coordinates, addresses, routes, and timestamps cannot be included."
+                         : "This receipt can show an approximate area, but it never includes a username, exact coordinates, address, route, or timestamp.")
                         .font(.caption)
                         .foregroundStyle(AICTheme.secondaryText)
                         .multilineTextAlignment(.leading)

@@ -1,18 +1,18 @@
-# Cooked Score Beta — Chicago schema-v3 method
+# Cooked Score — Chicago schema-v3 method
 
-Status: **provisional descriptive beta**
+Status: **provisional descriptive method**
 
 Methodology version: `beta-cell250-q5-area-v3`
 
-Consumer name: **Cooked Score Beta**
+Consumer name: **Cooked Score**
 
 Methodology name: **Reported Incident Exposure Index**
 
 ## Required interpretation
 
-> Cooked Score Beta compares historical reported-incident concentration around
-> this location with eligible Chicago comparison locations. It is not a live
-> safety assessment or personal-risk prediction.
+> Cooked Score is a historical data index that compares reported-incident
+> concentration around this location with eligible Chicago comparison locations.
+> It is not a live safety assessment or personal-risk prediction.
 
 The v3 score is a Chicago-only percentile of a privacy-coarsened estimate. It is
 not an exact incident count, a forecast, a probability of victimization, a live
@@ -48,6 +48,26 @@ Every eligible incident contributes one count to exactly one category and one
 non-overlapping cell. There are no severity weights, recency weights,
 time-of-day adjustments, demographic inputs, smoothing, predictions, or
 cross-city comparisons.
+
+## Freshness disclosure and fail-closed policy
+
+The pack records an exact `source_through_date` separately from its
+`fresh_until_date`. The first identifies the final occurrence date in the
+pack's historical source window; the second is the boundary at which the app
+must stop generating scores from that pack. Source records dated after
+`source_through_date` are not included, and later additions or revisions to the
+source snapshot may also be absent.
+
+Every score UI and every rendered receipt must display the exact
+`source_through_date` next to the score together with an explicit **not live**
+label. This disclosure cannot be replaced by an ambiguous “current,” “fresh,”
+“verified,” or “safe” badge.
+
+At or after `fresh_until_date`, pack opening and scanning fail closed and no
+score is produced. The cutoff is enforced from validated pack metadata, not an
+evergreen date embedded in marketing copy. A pack that is still inside its
+update window is not necessarily complete, unrevised, or suitable for immediate
+safety, emergency, navigation, or route decisions.
 
 ## Privacy-coarsened release
 
@@ -181,7 +201,7 @@ The deterministic cardinal-movement check sampled 2,000 pairs at each distance:
 | 25 m | 0 | 5 | 5 | 0% |
 | 50 m | 0 | 5 | 15 | 0.05% |
 
-These results support a descriptive beta score, not an exact incident-count
+These results support a descriptive score, not an exact incident-count
 claim. Hotspot outliers can have much larger count error; the UI must use
 “estimated contributing incidents.”
 
@@ -214,4 +234,4 @@ labels, not exact informal-neighborhood boundaries.
 
 The pack is Chicago-specific. Water, boundary, missing-coordinate, unknown-IUCR,
 and outside-official-boundary handling are recorded in the manifest. No score
-should be shown when coverage or schema validation fails.
+should be shown when coverage, schema validation, or the freshness cutoff fails.
