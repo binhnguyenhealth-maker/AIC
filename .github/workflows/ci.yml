@@ -85,6 +85,19 @@ jobs:
             ios/AIC/Resources/chicago_beta.sqlite \
             ios/AIC/Resources/pack_status_bootstrap.json \
             operations/pack-status/public/v1/status.json
+      - name: Build and inspect guest-only Release
+        run: |
+          xcodebuild \
+            -project ios/AIC.xcodeproj \
+            -scheme AIC \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/AICReleaseDerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          python3 ios/scripts/verify_guest_release_binary.py \
+            "$RUNNER_TEMP/AICReleaseDerivedData/Build/Products/Release-iphonesimulator/AIC.app"
       - name: Select an available iPhone Simulator
         id: simulator
         run: |

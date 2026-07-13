@@ -36,6 +36,20 @@ FORBIDDEN_FRAGMENTS = (
     "/v1/logout",
 )
 
+EXPECTED_COLLECTED_DATA = {
+    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherDataTypes",
+    "NSPrivacyCollectedDataTypeLinked": True,
+    "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+    ],
+    "NSPrivacyCollectedDataTypeTracking": False,
+}
+
+EXPECTED_ACCESSED_APIS = {
+    "NSPrivacyAccessedAPICategoryUserDefaults": ["CA92.1"],
+    "NSPrivacyAccessedAPICategorySystemBootTime": ["35F9.1"],
+}
+
 
 def binary_evidence(binary: Path) -> str:
     commands = (
@@ -61,6 +75,31 @@ def release_binaries(app: Path) -> list[Path]:
     return binaries
 
 
+def privacy_manifest_failures(app: Path) -> list[str]:
+    manifests = list(app.rglob("PrivacyInfo.xcprivacy"))
+    if len(manifests) != 1:
+        return [f"expected one privacy manifest, found {len(manifests)}"]
+    with manifests[0].open("rb") as handle:
+        manifest = plistlib.load(handle)
+
+    failures: list[str] = []
+    if manifest.get("NSPrivacyTracking") is not False:
+        failures.append("privacy manifest must disable tracking")
+    if manifest.get("NSPrivacyTrackingDomains") != []:
+        failures.append("privacy manifest must have no tracking domains")
+    if manifest.get("NSPrivacyCollectedDataTypes") != [EXPECTED_COLLECTED_DATA]:
+        failures.append("privacy manifest collected-data declaration drifted")
+
+    accessed = {
+        entry.get("NSPrivacyAccessedAPIType"): entry.get("NSPrivacyAccessedAPITypeReasons")
+        for entry in manifest.get("NSPrivacyAccessedAPITypes", [])
+        if isinstance(entry, dict)
+    }
+    if accessed != EXPECTED_ACCESSED_APIS:
+        failures.append("privacy manifest required-reason declarations drifted")
+    return failures
+
+
 def main() -> int:
     if len(sys.argv) != 2:
         print("usage: verify_guest_release_binary.py /path/to/AIC.app", file=sys.stderr)
@@ -72,6 +111,7 @@ def main() -> int:
         return 2
 
     failures: list[str] = []
+    failures.extend(privacy_manifest_failures(app))
     for binary in release_binaries(app):
         if not binary.is_file():
             failures.append(f"missing binary: {binary}")
@@ -82,7 +122,7 @@ def main() -> int:
                 failures.append(f"{binary.name}: found {fragment!r}")
 
     if failures:
-        print("guest Release identity residue detected:", file=sys.stderr)
+        print("guest Release validation failed:", file=sys.stderr)
         for failure in failures:
             print(f"- {failure}", file=sys.stderr)
         return 1

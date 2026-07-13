@@ -26,7 +26,7 @@ enum PackStatusGateError: Error, Equatable, LocalizedError {
     }
 }
 
-private struct PersistedPackStatus: Codable, Equatable {
+struct PersistedPackStatus: Codable, Equatable {
     let envelopeData: Data
     let checkpoint: PackStatusCheckpoint
     // These legacy key names are retained for compatibility with pre-release
@@ -40,7 +40,12 @@ private enum PackStatusStoreError: Error {
     case unexpectedStatus(OSStatus)
 }
 
-private struct PackStatusStateStore: Sendable {
+protocol PackStatusStateStoring: Sendable {
+    func load() throws -> PersistedPackStatus?
+    func save(_ state: PersistedPackStatus) throws
+}
+
+private struct PackStatusStateStore: PackStatusStateStoring, Sendable {
     private let service = "com.binhnguyenhealth.aic.pack-status"
     private let account = "global-v1"
 
@@ -96,7 +101,7 @@ actor PackStatusClient: PackStatusAuthorizing {
     private let endpointURL: URL?
     private let bootstrapData: Data?
     private let verifier: PackStatusVerifier
-    private let stateStore: PackStatusStateStore
+    private let stateStore: any PackStatusStateStoring
     private let session: URLSession
     private var loadedState = false
     private var state: PersistedPackStatus?
@@ -122,6 +127,20 @@ actor PackStatusClient: PackStatusAuthorizing {
         configuration.timeoutIntervalForRequest = 12
         configuration.timeoutIntervalForResource = 15
         session = URLSession(configuration: configuration)
+    }
+
+    init(
+        endpointURL: URL?,
+        bootstrapData: Data?,
+        verifier: PackStatusVerifier,
+        stateStore: any PackStatusStateStoring,
+        session: URLSession
+    ) {
+        self.endpointURL = endpointURL
+        self.bootstrapData = bootstrapData
+        self.verifier = verifier
+        self.stateStore = stateStore
+        self.session = session
     }
 
     func authorize(packAt url: URL, refresh: Bool) async throws {
@@ -216,6 +235,10 @@ actor PackStatusClient: PackStatusAuthorizing {
     private func loadStateIfNeeded() throws {
         guard !loadedState else { return }
         state = try stateStore.load()
+        // Protected status came from an earlier app process. Offline code
+        // cannot prove elapsed time while this process was absent, so a signed
+        // HTTPS refresh is mandatory before cached authorization.
+        requiresNetworkRefresh = state != nil
         loadedState = true
     }
 
@@ -296,7 +319,11 @@ actor PackStatusClient: PackStatusAuthorizing {
             )
         } else {
             trustedTime = try PackStatusTrustedTime(
-                wallClock: trustedAt,
+                wallClock: localWallClock,
+                systemUptime: uptime
+            ).refreshed(
+                trustedWallClock: trustedAt,
+                localWallClock: localWallClock,
                 systemUptime: uptime
             )
         }

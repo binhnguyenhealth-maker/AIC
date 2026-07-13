@@ -5,7 +5,7 @@
 - [x] iOS project generation succeeds
 - [x] iOS Simulator build, install, and launch succeed in CI
 - [x] Swift Package tests pass in normal (48 tests) and guest Release mode (46 tests)
-- [x] App-hosted Simulator unit/privacy tests pass (67 tests)
+- [x] App-hosted Simulator unit/privacy tests pass (68 tests)
 - [x] Clean installs open the guest-only scan flow
 - [x] Bundled packs fail closed at the documented fresh-until boundary
 - [x] Every generated score and receipt shows the exact source-through date and a not-live label
@@ -23,7 +23,7 @@
 - [x] Install Xcode 26.6 and an iOS 26.5 Simulator runtime
 - [x] Add the founder's Apple Developer team to Xcode
 - [x] Register the final bundle identifier (Sign in with Apple is not enabled in the signed v1 binary)
-- [ ] Create or select the App Store Connect app record
+- [x] Create the App Store Connect app record (Apple ID `6790261791`)
 - [ ] Add the App Store Connect review contact and privacy-policy fields
 - [ ] Confirm agreements, tax, and banking status do not block distribution
 - [x] Create a distribution certificate/profile or enable automatic signing

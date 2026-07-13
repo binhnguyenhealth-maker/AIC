@@ -52,6 +52,10 @@ app process as requiring a network refresh. That refresh must include a valid
 HTTP `Date`, pass the existing signed-envelope checks, and be persisted before
 authorization. Refresh persistence takes the maximum of the prior floor and
 the newly trusted time, so a stale or rolled-back local clock cannot lower it.
+A client-level regression loads an otherwise valid persisted envelope into a
+new `PackStatusClient`, forces the network request to fail, calls authorization
+with `refresh: false`, and confirms the client still makes exactly one request
+and fails with `statusUnavailable` rather than falling back to the cache.
 
 `PackStatusClient.authorize` now advances and saves this state before it checks
 or acts on cached pack status. The existing Keychain item remains scoped to
@@ -107,6 +111,9 @@ xcodebuild -project ios/AIC.xcodeproj -scheme AIC -configuration Debug \
 
 Result: `** BUILD SUCCEEDED **`. This compiled the real iOS `AIC` target,
 including `PackStatusClient`, without signing or launching a simulator.
+
+The final app-hosted simulator suite, including the new process-restart
+regression, passed 68 tests with zero failures.
 
 ## Residual limitation
 

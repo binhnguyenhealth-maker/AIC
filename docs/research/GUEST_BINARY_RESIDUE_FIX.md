@@ -37,14 +37,14 @@ Normal Swift package tests retained non-guest behavior:
 
 ```text
 swift test
-Executed 46 tests, with 0 failures (0 unexpected)
+Executed 48 tests, with 0 failures (0 unexpected)
 ```
 
 Guest-mode Swift package tests compiled the account/username surface out:
 
 ```text
 swift test -Xswiftc -DGUEST_ONLY_V1
-Executed 44 tests, with 0 failures (0 unexpected)
+Executed 46 tests, with 0 failures (0 unexpected)
 ```
 
 A clean unsigned Release simulator build used isolated DerivedData and did not
@@ -53,7 +53,7 @@ launch a simulator:
 ```text
 xcodebuild -project ios/AIC.xcodeproj -scheme AIC -configuration Release \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-  -derivedDataPath /tmp/aic-guest-full-clean-dd \
+  -derivedDataPath /tmp/aic-final-release-derived \
   CODE_SIGNING_ALLOWED=NO build
 ** BUILD SUCCEEDED **
 ```
@@ -62,9 +62,15 @@ The artifact regression passed against that fresh build:
 
 ```text
 python3 ios/scripts/verify_guest_release_binary.py \
-  /tmp/aic-guest-full-clean-dd/Build/Products/Release-iphonesimulator/AIC.app
+  /tmp/aic-final-release-derived/Build/Products/Release-iphonesimulator/AIC.app
 guest Release identity check passed
 ```
+
+The final simulator Release executable SHA-256 was
+`8136093ca1b6924982d7253b0f23019cea9571632482e2eaec9e722788b59e6b`.
+The embedded privacy manifest also passed an exact assertion for linked Other
+Data/App Functionality, tracking disabled, UserDefaults `CA92.1`, and System
+Boot Time `35F9.1`.
 
 As a negative control, the same script failed against the earlier receipt-only
 Release artifact and identified `AccountAPI`, `AccountAPIProtocol`,
