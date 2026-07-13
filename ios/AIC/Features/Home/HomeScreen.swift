@@ -11,6 +11,7 @@ struct HomeScreen: View {
     @State private var isScanning = false
     @State private var showManualPicker = false
     @State private var showSettings = false
+    @State private var completedScans = 0
 
     private let scanEngine = LocalScanEngine()
 
@@ -18,7 +19,7 @@ struct HomeScreen: View {
         ZStack {
             AICBackground()
             ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 18) {
                     header
                     scorePrompt
                     privacyStrip
@@ -55,20 +56,21 @@ struct HomeScreen: View {
             locationService.reset()
             scan(coordinate)
         }
+        .sensoryFeedback(.success, trigger: completedScans)
         .navigationBarTitleDisplayMode(.inline)
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text("CHICAGO / 500 M")
+        VStack(alignment: .leading, spacing: 6) {
+            Text("CHICAGO  ·  500 M  ·  ON-DEVICE")
                 .font(.caption.weight(.heavy))
                 .tracking(1.7)
                 .foregroundStyle(AICTheme.mint)
-            Text("Ready, @\(model.username)")
-                .font(.system(size: 31, weight: .black, design: .rounded))
+            Text("Am I cooked, fam?")
+                .font(.system(size: 29, weight: .black, design: .rounded))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-            Text("Your scan point stays on this iPhone.")
+            Text("Historical reported-incident data. Never a live danger scan.")
                 .font(.subheadline)
                 .foregroundStyle(AICTheme.secondaryText)
         }
@@ -76,24 +78,15 @@ struct HomeScreen: View {
 
     private var scorePrompt: some View {
         AICCard {
-            VStack(alignment: .leading, spacing: 20) {
-                ZStack {
-                    Circle()
-                        .stroke(AICTheme.mint.opacity(0.16), lineWidth: 22)
-                    Circle()
-                        .stroke(AICTheme.mint.opacity(0.5), lineWidth: 2)
-                        .padding(24)
-                    Image(systemName: "location.fill")
-                        .font(.system(size: 34, weight: .black))
-                        .foregroundStyle(AICTheme.coral)
-                }
-                .frame(width: 142, height: 142)
-                .frame(maxWidth: .infinity)
+            VStack(alignment: .leading, spacing: 16) {
+                RadarScanView(state: radarState)
+                    .frame(maxWidth: .infinity)
 
                 VStack(alignment: .leading, spacing: 7) {
-                    Text("Cook this location")
+                    Text(radarState == .idle ? "Scan the 500 m around you" : radarStatusTitle)
                         .font(.title2.weight(.black))
-                    Text("Estimate four supported incident categories for a fixed 500 m circle from privacy-coarsened local data, then compare with eligible Chicago locations.")
+                        .contentTransition(.numericText())
+                    Text("Check nearby reported incidents using the Chicago data pack stored on your iPhone.")
                         .font(.subheadline)
                         .foregroundStyle(AICTheme.secondaryText)
                 }
@@ -105,10 +98,10 @@ struct HomeScreen: View {
                         if isScanning || isRequestingLocation {
                             HStack(spacing: 10) {
                                 ProgressView().tint(AICTheme.ink)
-                                Text(isScanning ? "Computing locally…" : "Finding you once…")
+                                Text(isScanning ? "Scanning the area…" : "Finding your area…")
                             }
                         } else {
-                            Label("Scan Me", systemImage: "scope")
+                            Label("Scan My Area", systemImage: "scope")
                         }
                     }
                 }
@@ -118,7 +111,7 @@ struct HomeScreen: View {
                 Button {
                     showManualPicker = true
                 } label: {
-                    Label("Choose a spot manually", systemImage: "hand.tap")
+                    Label("Choose another spot", systemImage: "hand.tap")
                         .font(.headline)
                         .frame(maxWidth: .infinity, minHeight: 48)
                 }
@@ -134,7 +127,7 @@ struct HomeScreen: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "lock.fill")
                 .foregroundStyle(AICTheme.mint)
-            Text("Location and incident lookup are local. AIC sends no coordinate, address, route, geographic cell, or scan history to its account service.")
+            Text("Your point and scan history stay on this iPhone. AIC sends no coordinate, address, route, or geographic cell to its account service.")
                 .font(.caption)
                 .foregroundStyle(AICTheme.secondaryText)
         }
@@ -204,6 +197,20 @@ struct HomeScreen: View {
         }
     }
 
+    private var radarState: RadarScanView.State {
+        if isScanning { return .scanning }
+        if isRequestingLocation { return .locating }
+        return .idle
+    }
+
+    private var radarStatusTitle: String {
+        switch radarState {
+        case .idle: "Scan the 500 m around you"
+        case .locating: "Locking onto your area"
+        case .scanning: "Scanning reported history"
+        }
+    }
+
     private func loadPackSummary() async {
         do {
             packSummary = try await scanEngine.packSummary()
@@ -220,7 +227,12 @@ struct HomeScreen: View {
         Task {
             defer { isScanning = false }
             do {
-                onResult(try await scanEngine.scan(at: coordinate))
+                async let result = scanEngine.scan(at: coordinate)
+                async let minimumSweep: Void = Task.sleep(for: .milliseconds(1_100))
+                let scanResult = try await result
+                try await minimumSweep
+                completedScans += 1
+                onResult(scanResult)
             } catch {
                 model.present(error.localizedDescription)
             }

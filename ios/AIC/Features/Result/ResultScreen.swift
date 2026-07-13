@@ -66,9 +66,14 @@ struct ResultScreen: View {
                     .foregroundStyle(AICTheme.secondaryText)
 
                 Button(action: onShare) {
-                    Label("Make a Cooked Receipt", systemImage: "square.and.arrow.up")
+                    Label("Generate Cooked Report", systemImage: "doc.text.image")
                 }
                 .buttonStyle(PrimaryActionStyle())
+
+                Label("Shareable image · no exact location", systemImage: "lock.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AICTheme.secondaryText)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
         }
     }

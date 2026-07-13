@@ -32,6 +32,7 @@
 		96CB7C2F2280429025DD4D6D /* ReceiptCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C16772415E50302685E976 /* ReceiptCardView.swift */; };
 		98C1591FECA6A6790A523655 /* AICCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 140B755B541B3F810BAD0A9A /* AICCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D4098034C8BDBD607F0311F /* KeychainSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E9E10050D5CFAEB956F0C8 /* KeychainSessionStore.swift */; };
+		A5FBB3D7A73B9CBE23DBA523 /* RadarScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E698DDAD60F7FC238337CE7A /* RadarScanView.swift */; };
 		ACB8661380CF51BA42EB3DA1 /* ChicagoPackSchema.sql in Resources */ = {isa = PBXBuildFile; fileRef = BD1EF2BB0D18984D1F78A3AB /* ChicagoPackSchema.sql */; };
 		B22B381351B7C2E1F1819B6F /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ABE4A81112F9FC7B950AF39 /* AccountAPI.swift */; };
 		B85DACFFC649BAF557676726 /* UsernamePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE845CFEAF9A7390B73DCE6 /* UsernamePolicy.swift */; };
@@ -136,6 +137,7 @@
 		DE49B9ADE590802F4565213B /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		E03FCA59D08C706C3166546E /* UsernameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameScreen.swift; sourceTree = "<group>"; };
 		E3E9E10050D5CFAEB956F0C8 /* KeychainSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSessionStore.swift; sourceTree = "<group>"; };
+		E698DDAD60F7FC238337CE7A /* RadarScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarScanView.swift; sourceTree = "<group>"; };
 		F0F62DE0819D6764511D984B /* LocalScanEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalScanEngine.swift; sourceTree = "<group>"; };
 		FCFA9E3BEF6817D460D16EF1 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		FEF04095A739011067494018 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				39B6F054A79305E4EF637637 /* HomeScreen.swift */,
 				16C99D90517635B51352B1F8 /* MainFlowView.swift */,
 				1D64C07A16D8F9E8EDF3A69E /* OfflinePinPicker.swift */,
+				E698DDAD60F7FC238337CE7A /* RadarScanView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -509,6 +512,7 @@
 				7EE8DC407575B4E4237564CA /* LocationService.swift in Sources */,
 				C5B77244EAAA3CC88E45C9E7 /* MainFlowView.swift in Sources */,
 				21854932DB25C42FBD04788E /* OfflinePinPicker.swift in Sources */,
+				A5FBB3D7A73B9CBE23DBA523 /* RadarScanView.swift in Sources */,
 				CFC4CC22F496A8CB02C5C5EA /* ReceiptArtifactRenderer.swift in Sources */,
 				96CB7C2F2280429025DD4D6D /* ReceiptCardView.swift in Sources */,
 				015109C1B9E6AB42A8DA3613 /* ReceiptScreen.swift in Sources */,

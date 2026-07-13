@@ -2,31 +2,38 @@ import AICCore
 import SwiftUI
 
 struct MainFlowView: View {
+    private struct ScanRoute: Hashable {
+        let id = UUID()
+        let result: ChicagoScanResult
+
+        static func == (lhs: ScanRoute, rhs: ScanRoute) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
+
     private enum Route: Hashable {
-        case result
-        case receipt
+        case result(ScanRoute)
+        case receipt(ScanRoute)
     }
 
     @ObservedObject var model: AppModel
     @State private var path: [Route] = []
-    @State private var result: ChicagoScanResult?
 
     var body: some View {
         NavigationStack(path: $path) {
             HomeScreen(model: model) { scanResult in
-                result = scanResult
-                path.append(.result)
+                path.append(.result(ScanRoute(result: scanResult)))
             }
             .navigationDestination(for: Route.self) { route in
                 switch route {
-                case .result:
-                    if let result {
-                        ResultScreen(result: result) { path.append(.receipt) }
-                    }
-                case .receipt:
-                    if let result {
-                        ReceiptScreen(result: result, username: model.username)
-                    }
+                case let .result(scan):
+                    ResultScreen(result: scan.result) { path.append(.receipt(scan)) }
+                case let .receipt(scan):
+                    ReceiptScreen(result: scan.result, username: model.username)
                 }
             }
         }

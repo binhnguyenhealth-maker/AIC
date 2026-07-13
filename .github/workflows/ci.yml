@@ -126,8 +126,10 @@ jobs:
         run: |
           app_path="$(find "$RUNNER_TEMP/AICDerivedData/Build/Products" -path '*Debug-iphonesimulator/AIC.app' -print -quit)"
           test -n "$app_path"
+          bundle_identifier="$(plutil -extract CFBundleIdentifier raw "$app_path/Info.plist")"
+          test -n "$bundle_identifier"
           xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$app_path"
-          xcrun simctl launch "${{ steps.simulator.outputs.udid }}" com.binhnguyenhealth.aic
+          xcrun simctl launch "${{ steps.simulator.outputs.udid }}" "$bundle_identifier"
           sleep 3
           xcrun simctl io "${{ steps.simulator.outputs.udid }}" screenshot "$RUNNER_TEMP/aic-onboarding.png"
       - name: Upload Xcode evidence
