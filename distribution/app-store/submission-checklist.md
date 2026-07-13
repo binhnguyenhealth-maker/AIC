@@ -9,9 +9,9 @@
 - [x] Clean installs open the guest-only scan flow
 - [x] Bundled packs fail closed at the documented fresh-until boundary
 - [x] Every generated score and receipt shows the exact source-through date and a not-live label
-- [x] Release version is 1.0.0 (build 1)
+- [x] Release version is 1.0.0 (build 2)
 - [x] Release source has no account endpoint, account UI, or Sign in with Apple entitlement
-- [ ] Rebuilt signed App Store IPA contains one privacy manifest declaring only linked Other Data for App Functionality, with tracking disabled
+- [x] Rebuilt signed App Store IPA contains one privacy manifest declaring only linked Other Data for App Functionality, with tracking disabled
 - [x] App icon and required screenshots are generated and visually inspected
 - [x] Privacy policy URL returns HTTP 200
 - [x] Support URL returns HTTP 200
@@ -25,14 +25,15 @@
 - [x] Register the final bundle identifier (Sign in with Apple is not enabled in the signed v1 binary)
 - [x] Create the App Store Connect app record (Apple ID `6790261791`)
 - [ ] Add the App Store Connect review contact and privacy-policy fields
-- [ ] Confirm agreements, tax, and banking status do not block distribution
+- [x] Confirm the active Free Apps Agreement permits free distribution; paid-app tax and banking setup is not required for this free v1
 - [x] Create a distribution certificate/profile or enable automatic signing
 - [x] Archive a generic production-device Release build and export a signed App Store IPA
-- [ ] Upload the archive and wait for App Store processing
+- [x] Upload build 2 to App Store Connect
+- [x] Wait for App Store processing to complete (build 2 is Ready to Submit)
 - [ ] Add the processed build to an internal TestFlight group
 - [ ] Install from TestFlight on a physical device and execute the smoke test
 - [ ] Complete age rating, export compliance, content rights, and App Privacy forms
-- [ ] Upload final device screenshots
+- [x] Upload the three final 6.9-inch screenshots
 - [ ] Submit the selected build for external TestFlight beta review or App Review
 
 ## Trust and data-release gates
